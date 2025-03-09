@@ -27,6 +27,7 @@
       </form>
     </div>
     <button>A</button>
+    <button>A</button>
   </template>
   
   <script setup>
