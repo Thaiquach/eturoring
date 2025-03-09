@@ -27,6 +27,7 @@
       </form>
     </div>
     <button>A</button>
+    <h1>Trang new</h1>
   </template>
   
   <script setup>
