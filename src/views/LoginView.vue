@@ -26,6 +26,7 @@
         <p v-if="errorMessage" style="color:red;">{{ errorMessage }}</p>
       </form>
     </div>
+    <button>A</button>
   </template>
   
   <script setup>
