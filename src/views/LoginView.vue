@@ -45,7 +45,7 @@ async function handleLogin() {
       password: password.value
     });
     // Kiểm tra nếu login thành công, giả sử token có trong response.data.accessToken
-    const token = response.data.accessToken;
+    const token = response.data.token;
     if (token) {
       localStorage.setItem('token', token);
       router.push('/homeview');
