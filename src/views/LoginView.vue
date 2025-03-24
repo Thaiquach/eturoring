@@ -34,28 +34,19 @@ async function handleLogin() {
       password: password.value
     });
     // Giả sử token được trả về trong response.data.token
-    const token = response.data.accessToken;
-    if (token) {
-      localStorage.setItem('token', token);
-      // Giải mã token để lấy thông tin vai trò
-      const decoded = jwtDecode(token);
-      console.log('Decoded token:', decoded);
-      const username = decoded.username;
+    const token = response.data.token
+if (token) {
+  localStorage.setItem('token', token)
+  const decoded = jwtDecode(token)
+  console.log('Decoded token:', decoded)
+  const role = decoded.role?.toLowerCase() || ''
 
-      // Chuyển hướng dựa trên vai trò
-      if (username === 'emilys') {
-        router.push('/homeview');
-      } else if (username === 'averyp') {
-        router.push('/homestudent');
-      } else if (username === 'oliviaw') {
-        router.push('/hometutor');
-      } else {
-        // Nếu vai trò không xác định, chuyển hướng mặc định
-        router.push('/');
-      }
-    } else {
-      errorMessage.value = response.data.message || 'Login failed';
-    }
+  if (role === 'admin') router.push('/homeview')
+  else if (role === 'student') router.push('/homestudent')
+  else if (role === 'tutor') router.push('/hometutor')
+  else errorMessage.value = 'Unauthorized'
+}
+
   } catch (error) {
     errorMessage.value = error.response?.data?.message || error.message || 'An error occurred during login.';
   }

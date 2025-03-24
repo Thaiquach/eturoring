@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import classService from '@/api/classService.js'
+import classService from '../api/classService.js'
 
 const classes = ref([])
 const title = ref('')
