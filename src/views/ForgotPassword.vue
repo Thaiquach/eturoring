@@ -15,7 +15,7 @@
           />
         </div>
         <button type="submit">Submit</button>
-      </form>
+      </form>     
   
       <!-- Form nhập mã xác minh (verification code) -->
       <form v-if="isVerificationFormVisible" @submit.prevent="handleVerificationSubmit">

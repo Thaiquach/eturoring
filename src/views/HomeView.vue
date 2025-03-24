@@ -1,20 +1,35 @@
 <script setup>
-import SideBar from '../components/SideBar.vue';
-import TopBar from '../components/TopBar.vue';
-import { useToken } from '../api/getToken.js'; // Import useToken()
+import { ref, onMounted } from 'vue'
+import TopBar from '../components/TopBar.vue'    // ← import TopBar
+import SideBar from '../components/sidebar-temp.vue'
+import classService from '../api/classService.js'  // <–– import
 
-const { token } = useToken(); // Lấy token từ getToken.js
+const showSidebar = ref(false)
+const token = ref('')
+const classes = ref([])                             // <–– store danh sách lớp
+
+onMounted(async () => {
+  token.value = localStorage.getItem('token') || ''
+  try {
+    const res = await classService.getClasses()
+    classes.value = res.data.products                // dummyjson trả về products array
+  } catch (err) {
+    console.error('Failed to load classes:', err)
+  }
+})
+// rest of your script...
 </script>
+
 
 <template>
   <div class="layout-container">
     <!-- Sidebar Component -->
     <SideBar />
-    
+
     <!-- Phần main bao gồm Topbar và Content -->
     <div class="main">
       <TopBar />
-      
+
       <div class="content">
         <!-- Hiển thị thông tin token từ getToken.js -->
         <p>Your token: {{ token }}</p>
@@ -23,35 +38,29 @@ const { token } = useToken(); // Lấy token từ getToken.js
         <div class="btn-group">
           <router-link class="btn" to="/student">Student</router-link>
           <router-link class="btn" to="/tutor">Tutor</router-link>
-          <router-link class="btn" to="/addnewclass">Add New Class</router-link>
+          <router-link class="btn" to="/Class_view/Home_class.vue">Add New Class</router-link>
         </div>
-
-        <!-- Bảng hiển thị danh sách thông tin -->
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Role</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>1</td>
-              <td>John Doe</td>
-              <td>Student</td>
-              <td><button>Edit</button></td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>Jane Smith</td>
-              <td>Tutor</td>
-              <td><button>Edit</button></td>
-            </tr>
-          </tbody>
-        </table>
       </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Class Name</th>
+            <th>Price</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="cls in classes" :key="cls.id">
+            <td>{{ cls.id }}</td>
+            <td>{{ cls.title }}</td>
+            <td>{{ cls.price }}</td>
+            <td><button>Edit</button></td>
+          </tr>
+        </tbody>
+      </table>
+
     </div>
   </div>
 </template>
