@@ -5,6 +5,8 @@ import LoginView from '../views/LoginView.vue';
 import ForgotPassword from '../views/ForgotPassword.vue';
 import Home_Tutor from '../Tutor_views/Home_Tutor.vue';
 import Home_Student from '../Student_views/Home_Student.vue';
+import ManageStudent from '../Admin_views/manageStudent.vue';
+import ManageTutor from '../Admin_views/manageTutor.vue';
 
 
 const routes = [
@@ -38,6 +40,18 @@ const routes = [
     name: 'HomeStudent',
     component: Home_Student
   },
+  {
+    path: '/manageStudent',
+    name: 'ManageStudent',
+    component: ManageStudent,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/manageTutor',
+    name: 'ManageTutor',
+    component: ManageTutor,
+    meta: { requiresAuth: true }
+  },
 ];
 
 const router = createRouter({
@@ -45,7 +59,7 @@ const router = createRouter({
   routes
 });
 
-// Navigation Guard: nếu route yêu cầu auth và không có token, chuyển hướng về Login
+//Navigation Guard: nếu route yêu cầu auth và không có token, chuyển hướng về Login
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token');
   if (to.meta.requiresAuth && !token) {

@@ -21,8 +21,8 @@ const { token } = useToken(); // Lấy token từ getToken.js
 
         <!-- Nhóm button dưới dạng link chuyển trang -->
         <div class="btn-group">
-          <router-link class="btn" to="/student">Student</router-link>
-          <router-link class="btn" to="/tutor">Tutor</router-link>
+          <router-link class="btn" to="/manageStudent">Student</router-link>
+          <router-link class="btn" to="/manageTutor">Tutor</router-link>
           <router-link class="btn" to="/addnewclass">Add New Class</router-link>
         </div>
 
