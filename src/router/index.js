@@ -6,6 +6,8 @@ import ForgotPassword from '../views/ForgotPassword.vue';
 import Home_Tutor from '../Tutor_views/Home_Tutor.vue';
 import Home_Student from '../Student_views/Home_Student.vue';
 import Home_Class from '../Class_views/Home_Class.vue';
+import ManageStudent from '../Admin_views/manageStudent.vue';
+import ManageTutor from '../Admin_views/manageTutor.vue';
 
 
 const routes = [
@@ -43,7 +45,19 @@ const routes = [
     path: '/homeclass',
     name: 'HomeClass',
     component: Home_Class
-  }
+  },
+  {
+    path: '/manageStudent',
+    name: 'ManageStudent',
+    component: ManageStudent,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/manageTutor',
+    name: 'ManageTutor',
+    component: ManageTutor,
+    meta: { requiresAuth: true }
+  },
 ];
 
 const router = createRouter({

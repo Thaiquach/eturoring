@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import TopBar from '../components/TopBar.vue'    // ← import TopBar
-import SideBar from '../components/sidebar-temp.vue'
+import SideBar from '../components/SideBar.vue'
 import classService from '../api/classService.js'  // <–– import
 
 const showSidebar = ref(false)
@@ -36,8 +36,8 @@ onMounted(async () => {
 
         <!-- Nhóm button dưới dạng link chuyển trang -->
         <div class="btn-group">
-          <router-link class="btn" to="/student">Student</router-link>
-          <router-link class="btn" to="/tutor">Tutor</router-link>
+          <router-link class="btn" to="/manageStudent">Student</router-link>
+          <router-link class="btn" to="/manageTutor">Tutor</router-link>
           <router-link class="btn" to="/homeclass">Add New Class</router-link>
         </div>
       </div>
