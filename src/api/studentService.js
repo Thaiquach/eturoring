@@ -61,4 +61,8 @@ export default {
   createStudent,
   updateStudent,
   deleteStudent,
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> origin/master

@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/master
 import axios from 'axios';
 
 const getAuthHeaders = () => {
@@ -62,4 +65,8 @@ export default {
   createTutor,
   updateTutor,
   deleteTutor,
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> origin/master

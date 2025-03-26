@@ -5,6 +5,10 @@ import LoginView from '../views/LoginView.vue';
 import ForgotPassword from '../views/ForgotPassword.vue';
 import Home_Tutor from '../Tutor_views/Home_Tutor.vue';
 import Home_Student from '../Student_views/Home_Student.vue';
+<<<<<<< HEAD
+=======
+import Home_Class from '../Class_views/Home_Class.vue';
+>>>>>>> origin/master
 import ManageStudent from '../Admin_views/manageStudent.vue';
 import ManageTutor from '../Admin_views/manageTutor.vue';
 
@@ -41,6 +45,14 @@ const routes = [
     component: Home_Student
   },
   {
+<<<<<<< HEAD
+=======
+    path: '/homeclass',
+    name: 'HomeClass',
+    component: Home_Class
+  },
+  {
+>>>>>>> origin/master
     path: '/manageStudent',
     name: 'ManageStudent',
     component: ManageStudent,

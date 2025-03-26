@@ -16,3 +16,4 @@ export default {
     return axios.put(`https://dummyjson.com/products/${id}`, payload)
   }
 };
+
