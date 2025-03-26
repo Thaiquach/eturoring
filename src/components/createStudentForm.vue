@@ -1,6 +1,5 @@
 <script setup>
 import { ref, watch } from 'vue';
-//import { addStudent, updateStudent, fetchStudents } from '../api/studentService';
 import studentService from '../api/studentService';
 
 const props = defineProps(['editingStudent']);
@@ -11,7 +10,7 @@ const fullName = ref('');
 const studentCode = ref('');
 const email = ref('');
 const userName = ref('');
-
+const password = ref('');
 const course = ref('');
 const status = ref('');
 
@@ -21,18 +20,14 @@ watch(() => props.editingStudent, (newVal) => {
   if (newVal) {
     console.log("Editing student with id:", newVal.id);
     id.value = newVal.id;
-    // Lấy thông tin từ nested user object
     fullName.value = newVal.user?.fullName || '';
     email.value = newVal.user?.email || '';
     userName.value = newVal.user?.userName || '';
-    
-    // Các field khác
+    password.value = newVal.password || '';
     studentCode.value = newVal.studentCode || '';
     course.value = newVal.course || '';
     status.value = newVal.status || '';
     
-    // Nếu backend không trả về password, bạn có thể để rỗng để nhập lại
-    //password.value = '';
   
   }
 }, { deep: true });
@@ -42,10 +37,11 @@ const submitForm = async () => {
 
   
   const studentPayload = {
-    //fullName: fullName.value,
+    FullName: fullName.value,
     StudentCode: studentCode.value,
-    //email: email.value,
-    //userName: userName.value,
+    Email: email.value,
+    UserName: userName.value,
+    Password: password.value,
     
     Course: course.value,
     Status: status.value
@@ -73,7 +69,7 @@ const submitForm = async () => {
   studentCode.value = '';
   email.value = '';
   userName.value = '';
-
+  password.value = '';
   course.value = '';
   status.value = '';
 };
@@ -84,32 +80,54 @@ const submitForm = async () => {
   <form @submit.prevent="submitForm" class="form-container student-theme">
     <h3>{{ id ? 'Edit Student' : 'Add Student' }}</h3>
 
-    <!-- <div class="input-group">
-      <input v-model="fullName" required placeholder="fullName" />
-    </div> -->
-
+    <!-- Full Name -->
     <div class="input-group">
-      <input v-model="studentCode" required placeholder="Student ID" />
+      <label for="fullName" class="input-label">Full Name</label>
+      <input id="fullName" v-model="fullName" required placeholder="Full Name" :disabled="id" />
     </div>
 
-    <!-- <div class="input-group">
-      <input v-model="email" type="email" required placeholder="Email" />
-    </div> -->
-
-    <!-- <div class="input-group">
-      <input v-model="userName" required placeholder="userName" />
-    </div> -->
-
-    <!-- <div class="input-group">
-      <input v-model="password" type="password" required placeholder="Password" />
-    </div> -->
-
+    <!-- Student ID -->
     <div class="input-group">
-      <input v-model="course" required placeholder="course" />
+      <label for="studentCode" class="input-label">Student ID</label>
+      <input id="studentCode" v-model="studentCode" required placeholder="Student ID" />
     </div>
 
+    <!-- Email -->
     <div class="input-group">
-      <input v-model="status" required placeholder="status" />
+      <label for="email" class="input-label">Email</label>
+      <input id="email" v-model="email" type="email" required placeholder="Email" :disabled="id" />
+    </div>
+
+    <!-- Username -->
+    <div class="input-group">
+      <label for="userName" class="input-label">Username</label>
+      <input id="userName" v-model="userName" required placeholder="Username" :disabled="id" />
+    </div>
+
+    <!-- Password -->
+    <div class="input-group">
+      <label for="password" class="input-label">Password</label>
+      <input id="password" v-model="password" type="password" required placeholder="******" :disabled="id" />
+    </div>
+
+    <!-- Course Dropdown -->
+    <div class="input-group">
+      <label for="course" class="input-label">Course</label>
+      <div class="select-group">
+        <select id="course" v-model="course" @change="handleCourseChange" required>
+          <option disabled value="">Select Course</option>
+          <option value="IT">IT</option>
+          <option value="Business">Business</option>
+          <option value="Design">Design</option>
+        </select>
+        <span class="custom-arrow">&#9662;</span>
+      </div>
+    </div>
+
+    <!-- Status -->
+    <div class="input-group">
+      <label for="status" class="input-label">Status</label>
+      <input id="status" v-model="status" required placeholder="Status" />
     </div>
 
     <button type="submit">{{ id ? 'Update Student' : 'Add Student' }}</button>
@@ -151,6 +169,53 @@ const submitForm = async () => {
   border-bottom: 2px solid #0056b3;
 }
 
+/* Custom styling cho dropdown */
+.input-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.input-label {
+  flex: 0 0 80px; /* Chiều rộng cố định cho label */
+  color: #007bff; /* Màu xanh blue */
+  font-weight: bold;
+  text-align: left;
+  margin-right: 8px;
+}
+
+.select-group {
+  position: relative;
+  flex: 1;
+}
+
+.select-group select {
+  width: 100%;
+  padding: 8px;
+  border: none;
+  border-bottom: 2px solid #007bff;
+  font-size: 14px;
+  outline: none;
+  background: transparent;
+  transition: border-bottom 0.3s ease;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.select-group select:focus {
+  border-bottom: 2px solid #0056b3;
+}
+
+.select-group .custom-arrow {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 14px;
+  color: #007bff;
+}
 button {
   width: 100%;
   padding: 8px;

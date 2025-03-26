@@ -1,61 +1,72 @@
 <script setup>
 import { ref, watch } from 'vue';
-import { addTutor, updateTutor, fetchTutors } from '../api/tutorService';
+import tutorService from '../api/tutorService';
 
 const props = defineProps(['editingTutor']);
 const emit = defineEmits(['tutorUpdated']);
 
 const id = ref(null);
-const fullname = ref('');
+const fullName = ref('');
 const email = ref('');
-const username = ref('');
+const userName = ref('');
 const password = ref('');
-const experience = ref('');
-const rate = ref('');
+const department = ref('');
+const experienceYears = ref(0);
+const rating = ref(0);
 
+// Cập nhật giá trị khi props.editingTutor thay đổi
 watch(() => props.editingTutor, (newVal) => {
   if (newVal) {
     id.value = newVal.id;
-    fullname.value = newVal.fullname;
-    email.value = newVal.email;
-    username.value = newVal.username;
-    password.value = newVal.password;
-    experience.value = newVal.experience;  // Fixed: Now captures Experience
-    rate.value = newVal.rate;  // Fixed: Now captures Rate
+    fullName.value = newVal.fullName || '';
+    email.value = newVal.email || '';
+    userName.value = newVal.username || '';
+    password.value = newVal.password || '';
+    department.value = newVal.department || '';
+    experienceYears.value = newVal.experienceYears || 0;
+    rating.value = newVal.rating || 0;
   }
 }, { deep: true });
 
 const submitForm = async () => {
+  let updatedTutor = null;
+
+  const tutorPayload = {
+    fullName: fullName.value,
+    email: email.value,
+    username: userName.value,
+    password: password.value,
+    department: department.value,
+    experienceYears: experienceYears.value,
+    rating: rating.value
+  };
+
   if (id.value) {
-    await updateTutor({
-      id: id.value,
-      fullname: fullname.value,
-      email: email.value,
-      username: username.value,
-      password: password.value,
-      experience: experience.value,
-      rate: rate.value
-    });
+    console.log("Submit form update tutor, id:", id.value);
+    const success = await tutorService.updateTutor(id.value, tutorPayload);
+    if (success) {
+      updatedTutor = { id: id.value, ...tutorPayload };
+    }
   } else {
-    await addTutor({
-      fullname: fullname.value,
-      email: email.value,
-      username: username.value,
-      password: password.value,
-      experience: experience.value,
-      rate: rate.value
-    });
+    const success = await tutorService.createTutor(tutorPayload);
+    if (success) {
+      updatedTutor = { id: Date.now(), ...tutorPayload };
+    }
   }
 
-  emit('tutorUpdated', await fetchTutors());
+  if (updatedTutor) {
+    emit('tutorUpdated', updatedTutor);
+  }
 
+  // Reset lại các trường
   id.value = null;
-  fullname.value = '';
+  fullName.value = '';
   email.value = '';
-  username.value = '';
+  userName.value = '';
   password.value = '';
-  experience.value = '';  // Fixed: Reset fields properly
-  rate.value = '';  // Fixed: Reset fields properly
+  department.value = '';
+  experienceYears.value = 0;
+  rating.value = 0;
 };
 </script>
 
@@ -63,28 +74,62 @@ const submitForm = async () => {
   <form @submit.prevent="submitForm" class="form-container tutor-theme">
     <h3>{{ id ? 'Edit Tutor' : 'Add Tutor' }}</h3>
 
+    <!-- Full Name -->
     <div class="input-group">
-      <input v-model="fullname" required placeholder="Fullname" />
+      <label for="fullName" class="input-label">Full Name</label>
+      <input id="fullName" v-model="fullName" required placeholder="Full Name" :disabled="id" />
+    </div>
+
+    <!-- Email -->
+    <div class="input-group">
+      <label for="email" class="input-label">Email</label>
+      <input id="email" v-model="email" type="email" required placeholder="Email" :disabled="id" />
+    </div>
+
+    <!-- Username -->
+    <div class="input-group">
+      <label for="userName" class="input-label">Username</label>
+      <input id="userName" v-model="userName" required placeholder="Username" :disabled="id" />
+    </div>
+
+    <!-- Password -->
+    <div class="input-group">
+      <label for="password" class="input-label">Password</label>
+      <input id="password" v-model="password" type="password" required placeholder="Password" :disabled="id" />
+    </div>
+
+    <!-- Department -->
+    <div class="input-group">
+      <label for="department" class="input-label">Department</label>
+      <input id="department" v-model="department" required placeholder="Department" />
     </div>
 
     <div class="input-group">
-      <input v-model="email" type="email" required placeholder="Email" />
+      <label for="experienceYears" class="input-label">Experience Years</label>
+      <input
+        id="experienceYears"
+        v-model.number="experienceYears"
+        type="number"
+        min="1"
+        required
+        placeholder="Experience Years"
+      />
     </div>
 
+    <!-- Rating Dropdown -->
     <div class="input-group">
-      <input v-model="username" required placeholder="Username" />
-    </div>
-
-    <div class="input-group">
-      <input v-model="password" type="password" required placeholder="Password" />
-    </div>
-
-    <div class="input-group">
-      <input v-model="experience" required placeholder="Experience (Years)" />
-    </div>
-
-    <div class="input-group">
-      <input v-model="rate" required placeholder="Rating" />
+      <label for="rating" class="input-label">Rating</label>
+      <div class="select-group">
+        <select id="rating" v-model="rating" required>
+          <option disabled value="">Select Rating</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+        <span class="custom-arrow">&#9662;</span>
+      </div>
     </div>
 
     <button type="submit">{{ id ? 'Update Tutor' : 'Add Tutor' }}</button>
@@ -106,7 +151,14 @@ const submitForm = async () => {
   transform: translateY(-5px);
 }
 
-input {
+.input-group {
+  position: relative;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.input-group input {
   width: 100%;
   padding: 8px;
   border: none;
@@ -115,11 +167,51 @@ input {
   outline: none;
   background: transparent;
   transition: border-bottom 0.3s ease;
-  margin-bottom: 12px;
 }
 
-input:focus {
+.input-group input:focus {
   border-bottom: 2px solid #218838;
+}
+
+.input-label {
+  flex: 0 0 80px;
+  color: #28a745;
+  font-weight: bold;
+  text-align: left;
+  margin-right: 8px;
+}
+
+.select-group {
+  position: relative;
+  flex: 1;
+}
+
+.select-group select {
+  width: 100%;
+  padding: 8px;
+  border: none;
+  border-bottom: 2px solid #28a745;
+  font-size: 14px;
+  outline: none;
+  background: transparent;
+  transition: border-bottom 0.3s ease;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.select-group select:focus {
+  border-bottom: 2px solid #218838;
+}
+
+.select-group .custom-arrow {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 14px;
+  color: #28a745;
 }
 
 button {
@@ -139,6 +231,7 @@ button:hover {
   background: #218838;
 }
 
+/* Green Theme Border */
 .tutor-theme {
   border-left: 5px solid #28a745;
 }

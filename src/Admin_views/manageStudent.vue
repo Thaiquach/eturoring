@@ -1,12 +1,10 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import studentService from '../api/studentService';
-const { deleteStudent } = studentService;
-
 import CreateStudentForm from '../components/createStudentForm.vue';
 import SideBar from '../components/SideBar.vue';
 import TopBar from '../components/TopBar.vue';
-
+const { deleteStudent } = studentService;
 const students = ref([]);
 const editingStudent = ref(null);
 
@@ -68,7 +66,6 @@ const handleStudentUpdated = (updatedStudent) => {
               <th>Student Code</th>
               <th>Email</th>
               <th>Username</th>
-              
               <th>course</th>
               <th>status</th>
               <th>Action</th>
@@ -80,8 +77,7 @@ const handleStudentUpdated = (updatedStudent) => {
               <td>{{ student.user.fullName }}</td>
               <td>{{ student.studentCode }}</td>
               <td>{{ student.user.email }}</td>
-              <td>{{ student.user.userName }}</td>
-           
+              <td>{{ student.user.userName }}</td>          
               <td>{{ student.course }}</td>
               <td>{{ student.status }}</td>
               <td>

@@ -1,28 +1,65 @@
 
 import axios from 'axios';
 
-const API_URL = 'http://localhost:7050/api/tutors'; 
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('token');
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  };
+};
 
-// Lấy danh sách tutor từ API
-export async function fetchTutors() {
-  const response = await axios.get(API_URL);
-  return response.data;
-}
+const getAll = async () => {
+  const tutorData = await axios.get('https://localhost:7050/api/profile/tutors', getAuthHeaders());
+  console.log(tutorData
+  );
+  return tutorData;
+  
+};
 
-// Thêm tutor mới vào API
-export async function addTutor(tutorData) {
-  const response = await axios.post(API_URL, tutorData);
-  return response.data;
-}
+const createTutor = async (tutor) => {
+  try {
+    const response = await axios.post('https://localhost:7050/api/account/register-tutor', tutor, getAuthHeaders());
+    return response.data;
+  } catch (error) {
+    console.error('Error creating tutor:', error);
+    if (error.response && error.response.data) {
+      console.error('📛 Backend says:', error.response.data);
+    }
+    throw error;
+  }
+};
 
-// Cập nhật thông tin tutor
-export async function updateTutor(tutorData) {
-  const response = await axios.put(`${API_URL}/${tutorData.id}`, tutorData);
-  return response.data;
-}
+const updateTutor = async (id, tutor) => {
+  try {
+    const response = await axios.put(`https://localhost:7050/api/profile/update-tutor/${id}`, tutor, getAuthHeaders());
+    console.log("Response:", response, "ID:", id); 
+    return response.data;
+  } catch (error) {
+    console.error('Error updating tutor:', error);
+    if (error.response && error.response.data) {
+      console.error('📛 Backend says:', error.response.data);
+    }
+    throw error;
+  }
+};
 
-// Xóa tutor khỏi API
-export async function deleteTutor(id) {
-  await axios.delete(`${API_URL}/${id}`);
-}
-
+const deleteTutor = async (id) => {
+  try {
+    await axios.delete(`https://localhost:7050/api/profile/delete-tutor/${id}`, getAuthHeaders());
+    return true;
+  } catch (error) {
+    console.error('Error deleting tutor:', error);
+    if (error.response && error.response.data) {
+      console.error('📛 Backend says:', error.response.data);
+    }
+    return false;
+  }
+};
+export default {
+  getAll,
+  createTutor,
+  updateTutor,
+  deleteTutor,
+};

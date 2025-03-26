@@ -1,28 +1,48 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import { fetchTutors, deleteTutor } from '../api/tutorService';
+import tutorService from '../api/tutorService';
 import CreateTutorForm from '../components/createTutorForm.vue';
 import SideBar from '../components/SideBar.vue';
 import TopBar from '../components/TopBar.vue';
 
+const { deleteTutor } = tutorService;
 const tutors = ref([]);
 const editingTutor = ref(null);
 
 const loadTutors = async () => {
-  tutors.value = await fetchTutors();
+  try {
+    const response = await tutorService.getAll();
+    tutors.value = response.data;
+  } catch (error) {
+    console.error('Error loading tutors:', error);
+    tutors.value = [];
+  }
 };
 
-onMounted(loadTutors);
+onMounted(() => {
+  loadTutors();
+});
 
 const removeTutor = async (id) => {
   if (confirm('Are you sure you want to delete this tutor?')) {
-    await deleteTutor(id);
-    await loadTutors();
+    const success = await deleteTutor(id);
+    if (success) {
+      tutors.value = tutors.value.filter(t => t.id !== id);
+    }
   }
 };
 
 const editTutor = (tutor) => {
-  editingTutor.value = { ...tutor }; // ✅ Correctly sets the tutor being edited
+  editingTutor.value = { ...tutor };
+};
+
+const handleTutorUpdated = (updatedTutor) => {
+  const index = tutors.value.findIndex(t => t.id === updatedTutor.id);
+  if (index !== -1) {
+    tutors.value[index] = updatedTutor; // cập nhật tutor đã có
+  } else {
+    tutors.value.push(updatedTutor); // thêm mới tutor
+  }
 };
 </script>
 
@@ -43,23 +63,25 @@ const editTutor = (tutor) => {
         <table class="data-table">
           <thead>
             <tr>
-              <th>Fullname</th>
+              <th>FullName</th>
               <th>Email</th>
-              <th>Username</th>
-              <th>Password</th>
-              <th>Experience</th>
-              <th>Rate</th>
+              <th>UserName</th>
+              
+              <th>Department</th>
+              <th>experienceYears</th>
+              <th>rating</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="tutor in tutors" :key="tutor.id">
-              <td>{{ tutor.fullname }}</td>
-              <td>{{ tutor.email }}</td>
-              <td>{{ tutor.username }}</td>
-              <td>{{ tutor.password }}</td>
-              <td>{{ tutor.experience }}</td>
-              <td>{{ tutor.rate }}</td>
+              
+              <td>{{ tutor.user.fullName }}</td>
+              <td>{{ tutor.user.email }}</td>
+              <td>{{ tutor.user.userName }}</td>
+              <td>{{ tutor.department }}</td>          
+              <td>{{ tutor.experienceYears }}</td>
+              <td>{{ tutor.rating }}</td>
               <td>
                 <button class="edit-btn" @click="editTutor(tutor)">Edit</button>
                 <button class="delete-btn" @click="removeTutor(tutor.id)">Delete</button>

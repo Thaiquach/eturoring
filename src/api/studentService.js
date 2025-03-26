@@ -12,10 +12,8 @@ const getAuthHeaders = () => {
 
 const getAll = async () => {
   const studentData = await axios.get('https://localhost:7050/api/profile/students', getAuthHeaders());
-  console.log(studentData
-  );
+  console.log(studentData);
   return studentData;
-  
 };
 
 
@@ -64,55 +62,3 @@ export default {
   updateStudent,
   deleteStudent,
 };
-// const getAll = async () => {
-//   try {
-//     const response = await axios.get(`${BASE_URL}/profile/students`, getAuthHeaders());
-//     return response.data;
-//   } catch (error) {
-//     console.error('Error loading students:', error);
-//     throw error;
-//   }
-// };
-
-// const addStudent = async (newStudent) => {
-//   try {
-//     const response = await axios.post('https://localhost:7050/api/account/register-student', newStudent, getAuthHeaders());
-//     return response.data;
-//   } catch (error) {
-//     console.error('Error adding student:', error);
-//     return false;
-//   }
-// };
-
-// const updateStudent = async (updatedStudent) => {
-//   try {
-//     const response = await axios.put(
-//       `${BASE_URL}/profile/update-student/${updatedStudent.id}`,
-//       updatedStudent,
-//       getAuthHeaders()
-//     );
-//     return response.data;
-//   } catch (error) {
-//     console.error('Error updating student:', error);
-//     return false;
-//   }
-// };
-
-// const deleteStudent = async (studentId) => {
-//   try {
-//     await axios.delete(`${BASE_URL}/profile/delete-student/${studentId}`, getAuthHeaders());
-//     return true;
-//   } catch (error) {
-//     console.error('Error deleting student:', error);
-//     return false;
-//   }
-// };
-
-
-// // ✅ Export theo chuẩn
-// export default {
-//   getAll,
-//   addStudent,
-//   updateStudent,
-//   deleteStudent
-// };
