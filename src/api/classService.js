@@ -10,5 +10,9 @@ export default {
 
   createClass(newClass) {
     return axios.post(`${CLASS_API_URL}/add`, newClass);
+  },
+
+  updateClass(id, payload) {
+    return axios.put(`https://dummyjson.com/products/${id}`, payload)
   }
 };

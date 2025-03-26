@@ -38,7 +38,7 @@ onMounted(async () => {
         <div class="btn-group">
           <router-link class="btn" to="/student">Student</router-link>
           <router-link class="btn" to="/tutor">Tutor</router-link>
-          <router-link class="btn" to="/Class_view/Home_class.vue">Add New Class</router-link>
+          <router-link class="btn" to="/homeclass">Add New Class</router-link>
         </div>
       </div>
 
@@ -77,6 +77,7 @@ onMounted(async () => {
   flex: 1;
   display: flex;
   flex-direction: column;
+  margin-top: 60px;
 }
 
 /* Nội dung chính */
@@ -124,5 +125,8 @@ onMounted(async () => {
 
 .data-table tr:hover td {
   background-color: #fafafa;
+}
+.data-table {
+  margin-top: 100px; /* tránh TopBar */
 }
 </style>

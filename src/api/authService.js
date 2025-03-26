@@ -6,7 +6,7 @@ export default {
   login(credentials) {
     return axios.post(API_URL, {
       username: credentials.username,
-      password: credentials.password
+      password: credentials.password 
     })
   }
 }
