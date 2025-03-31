@@ -19,8 +19,8 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import authService from '../api/authService.js';
-import { jwtDecode } from 'jwt-decode'
+import authService, { handleLoginSuccess } from '../api/authService.js';
+import jwtDecode from 'jwt-decode';
 
 const username = ref('');
 const password = ref('');
@@ -31,24 +31,27 @@ async function handleLogin() {
   try {
     const response = await authService.login({
       username: username.value,
-      password: password.value
+      password: password.value,
     });
-    // Giả sử token được trả về trong response.data.token
-    const token = response.data.token
-if (token) {
-  localStorage.setItem('token', token)
-  const decoded = jwtDecode(token)
-  console.log('Decoded token:', decoded)
-  const role = decoded.role?.toLowerCase() || ''
-
-  if (role === 'admin') router.push('/homeview')
-  else if (role === 'student') router.push('/homestudent')
-  else if (role === 'tutor') router.push('/hometutor')
-  else errorMessage.value = 'Unauthorized'
-}
-
+    const token = response.data.token;
+    if (token) {
+      // Sử dụng input username để lưu vào localStorage
+      handleLoginSuccess(response.data, username.value);
+      
+      const decoded = jwtDecode(token);
+      console.log('Decoded token:', decoded);
+      const role = decoded.role?.toLowerCase() || '';
+      
+      if (role === 'admin') router.push('/homeview');
+      else if (role === 'student') router.push('/homestudent');
+      else if (role === 'tutor') router.push('/hometutor');
+      else errorMessage.value = 'Unauthorized';
+    }
   } catch (error) {
-    errorMessage.value = error.response?.data?.message || error.message || 'An error occurred during login.';
+    errorMessage.value =
+      error.response?.data?.message ||
+      error.message ||
+      'An error occurred during login.';
   }
 }
 </script>
