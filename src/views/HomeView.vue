@@ -1,24 +1,31 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import TopBar from '../components/TopBar.vue'    // ← import TopBar
+import TopBar from '../components/TopBar.vue'
 import SideBar from '../components/SideBar.vue'
-import classService from '../api/classService.js'  // <–– import
+import classService from '../api/classService.js'
 
-const showSidebar = ref(false)
-const token = ref('')
-const classes = ref([])                             // <–– store danh sách lớp
+const classes = ref([]) // Khai báo danh sách class
+const token = ref('')   // ✅ Khai báo token để tránh lỗi
 
 onMounted(async () => {
   token.value = localStorage.getItem('token') || ''
+
+  if (!token.value) {
+    alert('Please log in first!')
+    window.location.href = '/login' // Redirect về trang login nếu không có token
+    return
+  }
+
   try {
-    const res = await classService.getClasses()
-    classes.value = res.data.products                // dummyjson trả về products array
+    const res = await classService.getAllStudents();
+    classes.value = res.data
   } catch (err) {
-    console.error('Failed to load classes:', err)
+    console.error('Failed to load classes:', err.response ? err.response.data : err.message)
   }
 })
-// rest of your script...
 </script>
+
+
 
 
 <template>
@@ -38,8 +45,13 @@ onMounted(async () => {
         <div class="btn-group">
           <router-link class="btn" to="/manageStudent">Student</router-link>
           <router-link class="btn" to="/manageTutor">Tutor</router-link>
+
           <router-link class="btn" to="/addnewclass">Add New Class</router-link>
           <router-link class="btn" to="/manageblog">Blog</router-link>
+
+
+          <router-link class="btn" to="/homeclass">Add New Class</router-link>
+          <router-link class="btn" to="/homeSubject">Subject</router-link>
 
         </div>
       </div>
@@ -56,9 +68,9 @@ onMounted(async () => {
         <tbody>
           <tr v-for="cls in classes" :key="cls.id">
             <td>{{ cls.id }}</td>
-            <td>{{ cls.title }}</td>
-            <td>{{ cls.price }}</td>
-            <td><button>Edit</button></td>
+            <td>{{ cls.className }}</td>
+            <td>{{ cls.description }}</td>
+            <td><button disabled>Edit</button></td>
           </tr>
         </tbody>
       </table>
@@ -128,7 +140,9 @@ onMounted(async () => {
 .data-table tr:hover td {
   background-color: #fafafa;
 }
+
 .data-table {
-  margin-top: 100px; /* tránh TopBar */
+  margin-top: 100px;
+  /* tránh TopBar */
 }
 </style>

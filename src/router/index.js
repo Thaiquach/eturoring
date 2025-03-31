@@ -9,8 +9,11 @@ import Home_Student from '../Student_views/Home_Student.vue';
 import Home_Class from '../Class_views/Home_Class.vue';
 import ManageStudent from '../Admin_views/manageStudent.vue';
 import ManageTutor from '../Admin_views/manageTutor.vue';
+
 import manageBlog from '../components/manageBlog.vue';
 import displayProfile from '../components/displayProfile.vue';
+
+import Home_Subject from '../Subject_views/Home_Subject.vue';
 
 
 const routes = [
@@ -69,6 +72,7 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+
     path: '/manageblog',
     name: 'ManageBlog',
     component: manageBlog,
@@ -79,6 +83,13 @@ const routes = [
     name: 'ProfileDisplay',
     component: displayProfile
   },
+  {
+    path: '/homesubject',
+    name: 'HomeSubject',
+    component: Home_Subject,
+    meta: { requiresAuth: true }
+  },
+
 ];
 
 const router = createRouter({
