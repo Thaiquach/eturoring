@@ -3,14 +3,14 @@ import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
 import LoginView from '../views/LoginView.vue';
 import ForgotPassword from '../views/ForgotPassword.vue';
+import ResetPassword from '../views/ResetPassword.vue';
 import Home_Tutor from '../Tutor_views/Home_Tutor.vue';
 import Home_Student from '../Student_views/Home_Student.vue';
-<<<<<<< HEAD
-=======
 import Home_Class from '../Class_views/Home_Class.vue';
->>>>>>> origin/master
 import ManageStudent from '../Admin_views/manageStudent.vue';
 import ManageTutor from '../Admin_views/manageTutor.vue';
+import manageBlog from '../components/manageBlog.vue';
+import displayProfile from '../components/displayProfile.vue';
 
 
 const routes = [
@@ -35,6 +35,11 @@ const routes = [
     component: ForgotPassword
   },
   {
+    path: '/resetpassword',
+    name: 'ResetPassword',
+    component: ResetPassword
+  },
+  {
     path: '/hometutor',
     name: 'HomeTutor',
     component: Home_Tutor
@@ -45,14 +50,13 @@ const routes = [
     component: Home_Student
   },
   {
-<<<<<<< HEAD
-=======
+
     path: '/homeclass',
     name: 'HomeClass',
     component: Home_Class
   },
   {
->>>>>>> origin/master
+
     path: '/manageStudent',
     name: 'ManageStudent',
     component: ManageStudent,
@@ -63,6 +67,17 @@ const routes = [
     name: 'ManageTutor',
     component: ManageTutor,
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/manageblog',
+    name: 'ManageBlog',
+    component: manageBlog,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/profile',
+    name: 'ProfileDisplay',
+    component: displayProfile
   },
 ];
 

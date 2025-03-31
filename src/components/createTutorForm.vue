@@ -100,11 +100,9 @@ const submitForm = async () => {
 
     <!-- Department -->
     <div class="input-group">
-<<<<<<< HEAD
-      <label for="department" class="input-label">Department</label>
-=======
-<label for="department" class="input-label">Department</label>
->>>>>>> origin/master
+
+    <label for="department" class="input-label">Department</label>
+
       <input id="department" v-model="department" required placeholder="Department" />
     </div>
 

@@ -106,10 +106,6 @@ const handleStudentUpdated = (updatedStudent) => {
   display: flex;
   flex-direction: column;
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/master
 /* Background màu xanh nhạt */
 .student-theme {
   background-color: #dfeeff;

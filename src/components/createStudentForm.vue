@@ -106,11 +106,8 @@ const submitForm = async () => {
 
     <!-- Password -->
     <div class="input-group">
-<<<<<<< HEAD
       <label for="password" class="input-label">Password</label>
-=======
-<label for="password" class="input-label">Password</label>
->>>>>>> origin/master
+
       <input id="password" v-model="password" type="password" required placeholder="******" :disabled="id" />
     </div>
 

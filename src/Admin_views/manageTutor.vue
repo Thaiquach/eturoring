@@ -111,11 +111,9 @@ const handleTutorUpdated = (updatedTutor) => {
 
 /* Background màu xanh lá nhạt */
 .tutor-theme {
-<<<<<<< HEAD
+
   background-color: #dfffdc;
-=======
-background-color: #dfffdc;
->>>>>>> origin/master
+
   padding: 1rem;
   border-radius: 8px;
 }
@@ -166,8 +164,5 @@ background-color: #dfffdc;
 button:hover {
   opacity: 0.8;
 }
-<<<<<<< HEAD
+
 </style>
-=======
-</style>
->>>>>>> origin/master
