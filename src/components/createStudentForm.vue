@@ -106,7 +106,8 @@ const submitForm = async () => {
 
     <!-- Password -->
     <div class="input-group">
-<label for="password" class="input-label">Password</label>
+      <label for="password" class="input-label">Password</label>
+
       <input id="password" v-model="password" type="password" required placeholder="******" :disabled="id" />
     </div>
 

@@ -61,4 +61,6 @@ export default {
   createStudent,
   updateStudent,
   deleteStudent,
+
 };
+
