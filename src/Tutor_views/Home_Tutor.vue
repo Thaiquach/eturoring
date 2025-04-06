@@ -1,79 +1,126 @@
 <template>
   <div class="container">
-    <!-- Sidebar chứa các đường dẫn -->
-    <aside class="sidebar">
-      <ul>
-        <li><router-link to="/schedule">Schedule</router-link></li>
-        <li><router-link to="/manageblog"> Blog</router-link></li>
-        <li><router-link to="/chat">Message</router-link></li>
-        <li><router-link to="/profile">Profile</router-link></li>
-        
-      </ul>
-    </aside>
-    <!-- Nội dung chính -->
+
+    <UserSidebar />
+
     <div class="main-content">
-      <!-- Topbar với nút Logout -->
-      <header class="topbar">
-        <button @click="logout">Logout</button>
-      </header>
-      <!-- Phần body hiển thị danh sách blog -->
-      <section class="body">
-        <h1>Danh sách Class</h1>
-        
-      </section>
-      <!-- Footer -->
-      <footer class="footer">
-        <p>&copy; 2025 footer</p>
-      </footer>
+      <h3>📘 Các lớp của tôi (Tutor)</h3>
+      <table class="class-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Tên lớp</th>
+            <th>Môn học</th>
+            <th>Tutor</th>
+            <th>Slot</th>
+            <th>Ngày bắt đầu</th>
+            <th>Ngày kết thúc</th>
+            <th>Mô tả</th>
+            <th>Học sinh</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(classItem, index) in myTutorClasses" :key="index">
+            <td>{{ index + 1 }}</td>
+            <td>{{ classItem.className }}</td>
+            <td>{{ classItem.subjectName }}</td>
+            <td>{{ classItem.tutorName }}</td>
+            <td>{{ classItem.totalSlot }}</td>
+            <td>{{ formatDate(classItem.startDate) }}</td>
+            <td>{{ formatDate(classItem.endDate) }}</td>
+            <td>{{ classItem.description }}</td>
+            <td>
+              <ul v-if="classItem.studentNames?.length">
+                <li v-for="(student, idx) in classItem.studentNames" :key="idx">{{ student }}</li>
+              </ul>
+              <span v-else>Không có học sinh</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>
 
+<script setup>
+import { ref, onMounted } from 'vue';
+import jwtDecode from 'jwt-decode';
+import classService from '../api/classService';
+import UserSidebar from '../components/userSidebar.vue';
+
+const myTutorClasses = ref([]);
+
+const formatDate = (date) => {
+  const d = new Date(date);
+  return d.toLocaleDateString('vi-VN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+};
+
+const loadTutorClasses = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const decoded = jwtDecode(token);
+    const tutorId = decoded?.TutorId;
+
+    if (!tutorId) {
+      alert("Không tìm thấy TutorId trong token!");
+      return;
+    }
+
+    const response = await classService.getAllClasses();
+    myTutorClasses.value = response.data.filter((cls) =>
+      cls.tutorName && decoded?.given_name === cls.tutorName
+    );
+  } catch (error) {
+    console.error('❌ Lỗi khi tải lớp học (Tutor):', error);
+  }
+};
+
+onMounted(loadTutorClasses);
+</script>
 
 <style scoped>
 .container {
   display: flex;
 }
 
-/* Sidebar */
-.sidebar {
-  width: 200px;
-  background-color: #f4f4f4;
-  padding: 20px;
-}
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-}
-.sidebar ul li {
-  margin-bottom: 10px;
-}
-
-/* Main content */
 .main-content {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-.topbar {
-  background-color: #333;
-  color: white;
-  padding: 10px;
-  text-align: right;
-}
-.body {
-  flex: 1;
   padding: 20px;
 }
-.footer {
-  background-color: #ddd;
-  text-align: center;
-  padding: 10px;
+
+.class-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
 }
-.blog-item {
-  margin-bottom: 20px;
-  border-bottom: 1px solid #ccc;
-  padding-bottom: 10px;
+
+.class-table th,
+.class-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.class-table th {
+  background-color: #f2f2f2;
+}
+
+.class-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.class-table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 </style>

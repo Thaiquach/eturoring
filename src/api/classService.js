@@ -1,4 +1,5 @@
 import axios from 'axios';
+import jwtDecode from "jwt-decode";
 
 const BASE_URL = 'https://localhost:7050/api';
 
@@ -54,8 +55,62 @@ export default {
         Authorization: `Bearer ${token}`
       }
     });
-  }
+  },
+  deleteClass(id) {
+    return axios.delete(`${BASE_URL}/Class/delete-class/${id}`);
+  },
 
+  loadMyClasses() {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("Bạn chưa đăng nhập!");
+    }
+  
+    const decoded = jwtDecode(token);
+    const studentId = decoded["StudentId"];
+  
+    if (!studentId) {
+      throw new Error("Không tìm thấy StudentId trong token!");
+    }
+  
+    return axios.get(`${BASE_URL}/Class/get-all-classes`, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).then(res => {
+      const allClasses = res.data;
+      const myClasses = allClasses.filter(classItem =>
+        classItem.studentIds.includes(Number(studentId))
+      );
+      return myClasses;
+    });
+  },
+  loadMyTutorClasses() {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Bạn chưa đăng nhập!");
+      return [];
+    }
+  
+    const decoded = jwtDecode(token);
+    const tutorId = decoded["TutorId"];
+  
+    if (!tutorId) {
+      alert("Không tìm thấy TutorId trong token!");
+      return [];
+    }
+  
+    return axios.get(`${BASE_URL}/Class/get-all-classes`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }).then((res) => {
+      const allClasses = res.data;
+      const myClasses = allClasses.filter(c => c.tutorName && c.tutorName.toLowerCase().includes(decoded["given_name"].toLowerCase()));
+      return myClasses;
+    }).catch((err) => {
+      console.error("❌ Lỗi khi tải lớp của tutor:", err);
+      return [];
+    });
+  }
 };
 
 

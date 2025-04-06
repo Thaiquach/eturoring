@@ -75,6 +75,7 @@
       <thead>
         <tr>
           <th>#</th>
+          <th>ID</th> <!-- Thêm cột ID -->
           <th>Tên lớp</th>
           <th>Tutor</th>
           <th>Subject</th>
@@ -90,6 +91,7 @@
         <!-- Vòng lặp để hiển thị danh sách lớp học -->
         <tr v-for="(classItem, index) in classes" :key="index">
           <td>{{ index + 1 }}</td>
+          <td>{{ classItem.id || 'N/A' }}</td> <!-- Hiển thị ID -->
           <td>{{ classItem.className || 'Không có tên lớp' }}</td>
           <td>{{ classItem.tutorName || 'Không có tutor' }}</td>
           <td>{{ classItem.subjectName || 'Không có môn học' }}</td>
@@ -247,9 +249,8 @@ export default {
       }
     },
 
-    // Chỉnh sửa lớp học
     editClass(classItem) {
-      this.editClassId = classItem.id;
+      this.editClassId = classItem.id || classItem.ClassId || classItem.ID;
       this.isEditMode = true;
 
       this.classForm = {
@@ -260,24 +261,40 @@ export default {
         description: classItem.description || "",
       };
 
-      this.selectedTutor =
-        this.tutors.find((tutor) => tutor.fullName === classItem.tutorName) || null;
-      this.selectedSubject =
-        this.subjects.find(
-          (subject) => subject.subjectName === classItem.subjectName
-        ) || null;
-      const uniqueStudentNames = [...new Set(classItem.studentNames)];
-      this.selectedStudents = this.students.filter((student) =>
-        uniqueStudentNames.includes(student.user.fullName)
+      this.selectedTutor = this.tutors.find(
+        (tutor) => tutor.fullName === classItem.tutorName
+      ) || null;
+
+      this.selectedSubject = this.subjects.find(
+        (subject) => subject.subjectName === classItem.subjectName
+      ) || null;
+
+      // ✅ So khớp học sinh theo studentIds
+      this.selectedStudents = this.students.filter(student =>
+        classItem.studentIds.includes(student.id)
       );
+
+      console.log("👉 classItem.studentIds:", classItem.studentIds);
+      console.log("✅ selectedStudents:", this.selectedStudents);
       console.log("✏️ Đang chỉnh sửa lớp học với ID:", this.editClassId);
     },
-
     cancelEdit() {
       this.resetForm();
     },
 
+    async deleteClass(classId) {
+      const confirmDelete = confirm("❗ Bạn có chắc chắn muốn xóa lớp học này không?");
+      if (!confirmDelete) return;
 
+      try {
+        await classService.deleteClass(classId);
+        alert("🗑️ Lớp học đã được xóa thành công!");
+        await this.loadClasses(); // Load lại danh sách sau khi xóa
+      } catch (error) {
+        console.error("❌ Lỗi khi xóa lớp học:", error.response?.data || error.message);
+        alert("⚠️ Có lỗi xảy ra khi xóa lớp học!");
+      }
+    },
 
     async loadClasses() {
       try {
@@ -288,6 +305,7 @@ export default {
         console.error('❌ Lỗi khi lấy danh sách lớp học:', error);
       }
     },
+
     formatDate(date) {
       // Kiểm tra nếu ngày tháng là mặc định, hiển thị "Chưa xác định"
       if (!date || date === '0001-01-01T00:00:00') {
@@ -301,6 +319,7 @@ export default {
         day: '2-digit'
       });
     },
+    
     formatDateToISOString(date) {
       if (!date) {
         return null; // Trả về null nếu không có ngày

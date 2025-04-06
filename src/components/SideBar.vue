@@ -19,6 +19,9 @@
         <li>
           <router-link to="/Meetting">Meeting</router-link>
         </li>
+        <li>
+          <router-link to="/homeview">Home</router-link>
+        </li>
         <!-- Thêm các link khác nếu cần -->
       </ul>
     </nav>
