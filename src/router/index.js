@@ -9,11 +9,11 @@ import Home_Student from '../Student_views/Home_Student.vue';
 import Home_Class from '../Class_views/Home_Class.vue';
 import ManageStudent from '../Admin_views/manageStudent.vue';
 import ManageTutor from '../Admin_views/manageTutor.vue';
-
 import manageBlog from '../components/manageBlog.vue';
 import displayProfile from '../components/displayProfile.vue';
-
 import Home_Subject from '../Subject_views/Home_Subject.vue';
+import Home_ClassRoom from '../ClassRoom_views/Home_ClassRoom.vue';
+import Home_Schedule from '../Schedule_views/Home_Schedule.vue';
 
 
 const routes = [
@@ -88,6 +88,16 @@ const routes = [
     name: 'HomeSubject',
     component: Home_Subject,
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/homeclassroom',
+    name: 'HomeClassroom',
+    component: Home_ClassRoom
+  },
+  {
+    path: '/homeschedule',
+    name: 'HomeSchedule',
+    component: Home_Schedule
   },
 
 ];

@@ -46,12 +46,13 @@ onMounted(async () => {
           <router-link class="btn" to="/manageStudent">Student</router-link>
           <router-link class="btn" to="/manageTutor">Tutor</router-link>
 
-          <router-link class="btn" to="/addnewclass">Add New Class</router-link>
+          <router-link class="btn" to="/homeclassroom">Class Room</router-link>
           <router-link class="btn" to="/manageblog">Blog</router-link>
 
 
-          <router-link class="btn" to="/homeclass">Add New Class</router-link>
+          <router-link class="btn" to="/homeclass"> Class</router-link>
           <router-link class="btn" to="/homeSubject">Subject</router-link>
+          <router-link class="btn" to="/homeschedule">Schedules</router-link>
 
         </div>
       </div>
