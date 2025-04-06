@@ -12,11 +12,13 @@ import ManageTutor from '../Admin_views/manageTutor.vue';
 import manageBlog from '../components/manageBlog.vue';
 import displayProfile from '../components/displayProfile.vue';
 
-import ChatView from '../views/Chat/ChatView.vue';
-
 import Home_Subject from '../Subject_views/Home_Subject.vue';
 import Home_ClassRoom from '../ClassRoom_views/Home_ClassRoom.vue';
 import Home_Schedule from '../Schedule_views/Home_Schedule.vue';
+
+import ChatDialog from '../views/Chat/ChatDialog.vue';
+import ClassList from '../views/Chat/ClassList.vue';
+
 
 
 const routes = [
@@ -93,12 +95,8 @@ const routes = [
     component: Home_Subject,
     meta: { requiresAuth: true }
   },
-  {
+ 
 
-    path: '/chat',
-    name: 'Chat',
-    component: ChatView
-  },
   {
     path: '/homeclassroom',
     name: 'HomeClassroom',
@@ -110,6 +108,18 @@ const routes = [
     name: 'HomeSchedule',
     component: Home_Schedule
   },
+  {
+    path: '/chat/:receiverId',
+    name: 'ChatDialog',
+    component: ChatDialog,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/classlist',
+    name: 'ClassList',
+    component: ClassList,
+    meta: { requiresAuth: true }
+  }
 
 
 ];

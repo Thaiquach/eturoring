@@ -3,7 +3,7 @@
       <ul>
         <li><router-link to="/schedule">Schedule</router-link></li>
         <li><router-link to="/manageblog">Blog</router-link></li>
-        <li><router-link to="/chat">Message</router-link></li>
+        <li><router-link to="/classlist">Message</router-link></li>
         <li><router-link to="/profile">Profile</router-link></li>
      
       </ul>

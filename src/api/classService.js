@@ -24,6 +24,14 @@ export default {
     });
   },
 
+  getClassById(classId) {
+    const token = localStorage.getItem('token');
+    return axios.get(`${BASE_URL}/Class/get-class/${classId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  },
   // Lấy danh sách tutor (đính kèm token)
   getAllTutors() {
     const token = localStorage.getItem('token');
