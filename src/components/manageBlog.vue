@@ -1,266 +1,417 @@
 <template>
   <userLayout>
-    <div class="blog-container">
-      <!-- Header với nút Add New Blog -->
-      <div class="header">
-        <h2>Student_Blog</h2>
-        <button v-if="!isAdmin" @click="showCreateForm = true" class="add-btn">
-          ➕ Add New Blog
-        </button>
+    <div class="container">
+      <h2 class="page-title">📚 News</h2>
+
+      <!-- Fixed icon cho New Blog -->
+      <div v-if="role !== 'Admin'" class="new-blog-icon" @click="toggleCreateForm">
+        <span v-if="!showCreateForm">📝 New Blog</span>
+        <span v-else>✖ Close</span>
       </div>
 
-      <!-- Form tạo/chỉnh sửa blog -->
-      <CreateBlogForm
-        v-if="showCreateForm"
-        :editingBlog="editingBlog"
-        @blogUpdated="handleBlogUpdated"
-        @close="showCreateForm = false"
-      />
-
-      <!-- Danh sách Blog -->
-      <div v-for="blog in sortedBlogs" :key="blog.id" class="blog-card">
-        <!-- Header: Thông tin người đăng -->
-        <div class="blog-header">
-          <div class="blog-info">
-            <div class="username"><strong>{{ blog.user }}</strong></div>
-            <div class="timestamp">{{ formatDate(blog.createdAt) }}</div>
-          </div>
-          <!-- Icon Edit/Delete nếu có quyền -->
-          <div class="blog-actions">
-            <button v-if="canEdit(blog)" class="edit-btn" @click="editBlog(blog)">
-              ✏️
-            </button>
-            <button v-if="canDelete(blog)" class="delete-btn" @click="removeBlog(blog.id)">
-              🗑️
-            </button>
-          </div>
+      <!-- Create Blog Form Overlay -->
+      <div v-if="role !== 'Admin' && showCreateForm" class="create-blog-overlay">
+        <!-- Nền mờ -->
+        <div class="overlay-bg" @click="toggleCreateForm"></div>
+        
+        <!-- Form chính: hiển thị gần top, màu tím đậm -->
+        <div class="create-blog-form">
+          <h3 class="form-title">📝 What do you think?</h3>
+          <input v-model="newBlog.title" placeholder="Title" class="input" />
+          <textarea v-model="newBlog.content" placeholder="Content" class="input"></textarea>
+          <input type="file" @change="handleFileChange" class="input-file" />
+          <button @click="createNewBlog" class="btn btn-primary">POST</button>
         </div>
+      </div>
 
-        <!-- Body: Nội dung blog -->
-        <div class="blog-body">
-          <h3>{{ blog.title }}</h3>
-          <div v-if="isImage(blog.url)">
-            <img :src="getFileUrl(blog.url)" alt="Uploaded image" class="blog-image" />
+      <!-- Blog List -->
+      <div class="blog-list">
+        <div v-for="blog in blogs" :key="blog.id" class="blog-card">
+          <!-- Header: Tác giả và Thời gian -->
+          <div class="blog-header">
+            <div class="blog-meta">
+              ✍️ <span class="author">{{ blog.user }}</span> | 🕒 <span class="time">{{ formatDate(blog.createdAt) }}</span>
+            </div>
+            <div class="blog-actions" v-if="canEdit(blog) || canDelete(blog)">
+              <button v-if="canEdit(blog)" @click="editBlog(blog)" class="action-btn edit-btn" title="Sửa blog">✏️</button>
+              <button v-if="canDelete(blog)" @click="deleteBlog(blog.id)" class="action-btn delete-btn" title="Xóa blog">🗑️</button>
+            </div>
           </div>
-          <div v-else>
-            <a :href="getFileUrl(blog.url)" target="_blank">Download document</a>
+
+          <!-- Nội dung Blog -->
+          <h3 class="blog-title">{{ blog.title }}</h3>
+          <p class="blog-content">{{ blog.content }}</p>
+          
+          <!-- File đính kèm -->
+          <div v-if="blog.url" class="blog-file">
+            <img v-if="!blog.url.toLowerCase().endsWith('.pdf')" :src="getFullUrl(blog.url)" alt="Blog Image" class="blog-image" />
+            <a v-else :href="getFullUrl(blog.url)" target="_blank" class="file-link">📄 Xem file PDF</a>
           </div>
-          <p>{{ blog.content }}</p>
+
+          <!-- Form chỉnh sửa -->
+          <div v-if="editingBlog && editingBlog.id === blog.id" class="edit-form">
+            <input v-model="editingBlog.title" class="input" />
+            <textarea v-model="editingBlog.content" class="input"></textarea>
+            <input type="file" @change="handleEditFileChange" class="input-file" />
+            <button @click="updateBlogPost" class="btn btn-primary">Update</button>
+            <button @click="cancelEdit" class="btn btn-secondary">Cancel</button>
+          </div>
+          
+          <!-- Comments component -->
+          <Comments :blogId="blog.id" />
         </div>
       </div>
     </div>
   </userLayout>
 </template>
 
-<script setup>
-import { ref, computed, onMounted } from 'vue';
-import userLayout from './userLayout.vue';
+
+<script>
+
 import blogService from '../api/blogService';
-import CreateBlogForm from './createBlogForm.vue';
+import userLayout from './userLayout.vue';
+import jwtDecode from 'jwt-decode';
+import manageComment from './manageComment.vue';
 
-const blogs = ref([]);
-const editingBlog = ref(null);
-const showCreateForm = ref(false);
-const BASE_API_URL = 'https://localhost:7050';
-
-// ✅ Tải danh sách blog từ API
-const loadBlogs = async () => {
-  try {
-    const response = await blogService.getAllBlogs();
-    blogs.value = response;
-  } catch (error) {
-    console.error("Error loading blogs:", error);
-  }
-};
-
-// ✅ Định dạng ngày giờ
-const formatDate = (dateString) => {
-  if (!dateString) return '';
-  const options = {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  };
-  return new Date(dateString).toLocaleDateString('en-US', options);
-};
-
-// ✅ Sắp xếp blog theo thời gian giảm dần
-const sortedBlogs = computed(() =>
-  blogs.value.slice().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-);
-
-const isImage = (url) => {
-  const ext = url.split('.').pop().toLowerCase();
-  return ['jpg', 'jpeg', 'png', 'gif'].includes(ext);
-};
-
-const getFileUrl = (url) => {
-  if (!url) return '/placeholder.jpg';
-  if (!url.startsWith('/')) {
-    url = '/' + url;
-  }
-  return `${BASE_API_URL}${url}`;
-};
-
-const isAdmin = computed(() => {
-  return localStorage.getItem("role")?.toLowerCase() === "admin";
-});
-
-const canEdit = (blog) => {
-  // Chỉ cho phép chỉnh sửa nếu người tạo blog trùng với username của người đang đăng nhập
-  const storedUsername = localStorage.getItem("username");
-  return blog.user === storedUsername;
-};
-
-const canDelete = (blog) => {
-  // Cho phép xóa nếu blog được tạo bởi chính người dùng hoặc nếu vai trò của người dùng là admin
-  const storedUsername = localStorage.getItem("username");
-  const storedRole = localStorage.getItem("role")?.toLowerCase();
-  return (blog.user === storedUsername) || (storedRole === "admin");
-};
-
-
-
-
-// ✅ Sửa blog
-const editBlog = (blog) => {
-  editingBlog.value = { ...blog };
-  showCreateForm.value = true;
-};
-
-// ✅ Xóa blog
-const removeBlog = async (id) => {
-  if (confirm('Are you sure you want to delete this blog?')) {
-    const success = await blogService.deleteBlog(id);
-    if (success) {
-      blogs.value = blogs.value.filter((b) => b.id !== id);
+export default {
+  name: 'manageBlog',
+  components: {
+    userLayout,
+    Comments: manageComment
+  },
+  data() {
+    return {
+      blogs: [],
+      newBlog: {
+        title: '',
+        content: '',
+        file: null,
+      },
+      editingBlog: null,
+      role: '',
+      username: '',
+      backendBaseUrl: 'https://localhost:7050',
+      showCreateForm: false  // Biến dùng để toggle hiển thị form tạo blog
+    };
+  },
+  methods: {
+    async fetchBlogs() {
+      try {
+        const res = await blogService.getAllBlogs();
+        // Sắp xếp blog theo thời gian tạo giảm dần (mới nhất lên đầu)
+        this.blogs = res.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    getTokenInfo() {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const decoded = jwtDecode(token);
+        this.role = decoded.role;
+        this.username = decoded.username || decoded.given_name; 
+      }
+    },
+    handleFileChange(event) {
+      this.newBlog.file = event.target.files[0];
+    },
+    handleEditFileChange(event) {
+      this.editingBlog.file = event.target.files[0];
+    },
+    async createNewBlog() {
+      const formData = new FormData();
+      formData.append('Title', this.newBlog.title);
+      formData.append('Content', this.newBlog.content);
+      if (this.newBlog.file) {
+        formData.append('File', this.newBlog.file);
+      }
+      try {
+        await blogService.createBlog(formData);
+        this.newBlog = { title: '', content: '', file: null };
+        await this.fetchBlogs();
+        // Ẩn form sau khi tạo mới thành công
+        this.showCreateForm = false;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    editBlog(blog) {
+      this.editingBlog = { ...blog };
+    },
+    cancelEdit() {
+      this.editingBlog = null;
+    },
+    async updateBlogPost() {
+      try {
+        const formData = new FormData();
+        formData.append('Title', this.editingBlog.title);
+        formData.append('Content', this.editingBlog.content);
+        if (this.editingBlog.file) {
+          formData.append('File', this.editingBlog.file);
+        }
+        await blogService.updateBlog(this.editingBlog.id, formData);
+        this.editingBlog = null;
+        await this.fetchBlogs();
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async deleteBlog(id) {
+      if (confirm('Are you sure deleting this Blog?')) {
+        try {
+          await blogService.deleteBlog(id);
+          await this.fetchBlogs();
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    },
+    canEdit(blog) {
+      return blog.user === this.username;
+    },
+    canDelete(blog) {
+      return this.role === 'Admin' || blog.user === this.username;
+    },
+    formatDate(dateStr) {
+      return new Date(dateStr).toLocaleString();
+    },
+    getFullUrl(url) {
+      if (!url) return '';
+      if (url.startsWith('http')) return url;
+      return `${this.backendBaseUrl}${url}`;
+    },
+    toggleCreateForm() {
+      this.showCreateForm = !this.showCreateForm;
     }
+  },
+  mounted() {
+    this.getTokenInfo();
+    this.fetchBlogs();
   }
 };
-
-// ✅ Xử lý cập nhật blog
-const handleBlogUpdated = (updatedBlog) => {
-  const index = blogs.value.findIndex((b) => b.id === updatedBlog.id);
-  if (index !== -1) {
-    blogs.value[index] = updatedBlog;
-  } else {
-    blogs.value.push(updatedBlog);
-  }
-  showCreateForm.value = false;
-};
-
-onMounted(() => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    console.error("⚠️ No token found. Redirecting to login...");
-    window.location.href = "/login";
-  } else {
-    loadBlogs(); // Tải danh sách blog nếu token hợp lệ
-  }
-});
 </script>
 
 <style scoped>
-.blog-container {
-  flex: 0 0 70%;
-  background: #fff;
-  padding: 100px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+/* Container chính */
+.container {
+  padding: 20px;
+  background-color: #fff0f6;
 }
 
-/* Right sidebar */
-.right-sidebar {
-  flex: 0 0 28%;
-  background: #fff;
-  padding: 100px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+/* Tiêu đề trang */
+.page-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #9c27b0;
+  text-align: center;
 }
 
-/* Header */
-.header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-/* Add New Button */
-.add-btn {
-  background-color: #4caf50;
-  color: white;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 6px;
+/* Fixed icon cho New Blog */
+.new-blog-icon {
+  position: fixed;
+  top: 80px;
+  right: 10px;
+  background-color: #fff;
+  padding: 10px 15px;
+  border-radius: 30px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
   cursor: pointer;
+  z-index: 1100;
+  font-size: 1rem;
+  color: #9c27b0;
 }
 
-/* Blog Card */
+/* Overlay cho form tạo blog */
+.create-blog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Nền mờ phía sau form */
+.overlay-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1001;
+}
+
+/* Form tạo blog được căn giữa */
+.create-blog-form {
+  position: relative;
+  z-index: 1002;
+  background-color: #fce4ec;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 600px;
+  width: 90%;
+  margin: 0 20px;
+}
+.form-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #ad1457;
+  text-align: center;
+}
+
+/* Các input chung */
+.input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ce93d8;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: #f3e5f5;
+}
+.input-file {
+  margin-bottom: 10px;
+}
+
+/* Các nút bấm */
+.btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+}
+.btn-primary {
+  background-color: #ce93d8;
+  color: white;
+}
+.btn-secondary {
+  background-color: #f8bbd0;
+  color: white;
+  margin-left: 10px;
+}
+
+/* Blog List */
+.blog-list {
+  display: grid;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+/* Blog Card - tone chủ đạo hồng tím */
 .blog-card {
-  background: #fff;
-  border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: #f3e5f5;
+  border: 1px solid #ce93d8;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.blog-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* Blog Header */
 .blog-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 12px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.blog-meta {
+  font-size: 0.875rem;
+  color: #6a1b9a;
+}
+.author, .time {
+  font-weight: 500;
 }
 
-/* Blog Info */
-.blog-info {
-  flex: 1;
-}
-
-.username {
-  font-size: 14px;
-  font-weight: bold;
-  margin-bottom: 2px;
-}
-
-.timestamp {
-  font-size: 12px;
-  color: #999;
-}
-
-/* Blog Body */
-.blog-body {
-  text-align: left;
-}
-
-.image-container {
-  width: 20px;  /* Chỉnh sửa kích thước theo ý muốn */
-  height: 20px;
-  overflow: hidden;
-  border-radius: 8px;
-  margin-top: 8px;
-}
-
-.blog-image {
-  width: 50%;
-  height: 50%;
-  object-fit: cover;
-}
 /* Blog Actions */
-.blog-actions button {
+.blog-actions {
+  display: flex;
+  gap: 10px;
+}
+.action-btn {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 16px;
-  margin-left: 8px;
+  font-size: 1.25rem;
 }
-
 .edit-btn {
-  color: #ff9800;
+  color: #1976d2;
+}
+.delete-btn {
+  color: #d32f2f;
 }
 
-.delete-btn {
-  color: #f44336;
+/* Blog Content */
+.blog-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #4a148c;
+  margin-bottom: 10px;
+}
+.blog-content {
+  color: #424242;
+  white-space: pre-line;
+  margin-bottom: 10px;
+}
+
+/* Blog File */
+.blog-file {
+  margin-bottom: 10px;
+}
+.blog-image {
+  max-width: 100%;
+  border-radius: 8px;
+  border: 1px solid #ce93d8;
+}
+.file-link {
+  color: #6a1b9a;
+  text-decoration: underline;
+}
+
+/* Edit Form */
+.edit-form {
+  margin-top: 15px;
+  border-top: 1px solid #e1bee7;
+  padding-top: 15px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .new-blog-icon {
+    top: 40px; 
+    right: 10px;
+    font-size: 0.9rem;
+  }
+  .create-blog-form {
+    max-width: 90%;
+    padding: 15px;
+  }
+  .form-title {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .new-blog-icon {
+    top: 20px; 
+    right: 10px;
+    font-size: 0.85rem;
+  }
+  .create-blog-form {
+    padding: 10px;
+  }
+  .form-title {
+    font-size: 0.95rem;
+  }
 }
 </style>

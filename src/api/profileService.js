@@ -1,9 +1,7 @@
-// api/profileService.js
-import axios from "axios";
 
+import axios from "axios";
 const BASE_URL = "https://localhost:7050/api/profile";
 
-// Lấy thông tin profile của Student qua API
 export async function getStudentProfile(studentId, token) {
   try {
     const response = await axios.get(`${BASE_URL}/students/${studentId}`, {
@@ -15,8 +13,6 @@ export async function getStudentProfile(studentId, token) {
     throw error;
   }
 }
-
-// Lấy thông tin profile của Tutor qua API
 export async function getTutorProfile(tutorId, token) {
   try {
     const response = await axios.get(`${BASE_URL}/tutors/${tutorId}`, {

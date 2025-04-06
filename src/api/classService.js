@@ -37,6 +37,7 @@ export default {
   getAllSubjects() {
     return axios.get(`${BASE_URL}/Subjects/get-all-subjects`);
   },
+
   getAllClasses() {
     const token = localStorage.getItem('token');
     return axios.get(`${BASE_URL}/Class/get-all-classes`, {
@@ -45,6 +46,7 @@ export default {
       }
     });
   },
+  
   updateClass(id, classData) {
     const token = localStorage.getItem('token');
     return axios.put(`${BASE_URL}/Class/update-class/${id}`, classData, {

@@ -12,7 +12,7 @@ import ManageTutor from '../Admin_views/manageTutor.vue';
 
 import manageBlog from '../components/manageBlog.vue';
 import displayProfile from '../components/displayProfile.vue';
-
+import ChatView from '../views/Chat/ChatView.vue';
 import Home_Subject from '../Subject_views/Home_Subject.vue';
 
 
@@ -89,6 +89,11 @@ const routes = [
     component: Home_Subject,
     meta: { requiresAuth: true }
   },
+  {
+    path: '/chat',
+    name: 'Chat',
+    component: ChatView
+  }
 
 ];
 

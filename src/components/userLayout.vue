@@ -7,7 +7,7 @@
           <slot></slot>
         </div>
         <footer class="footer">
-          <p>&copy; 2025 Footer</p>
+          <p>&copy; Website E-Tutoring</p>
         </footer>
       </div>
     </div>
