@@ -1,4 +1,5 @@
 <template>
+
   <aside class="sidebar">
     <div class="avatar">
       <img :src="roleIcon" alt="user icon" />
@@ -44,6 +45,7 @@ export default {
         { label: "Profile", path: "/profile" },
       ];
     }
+
   }
 }
 </script>

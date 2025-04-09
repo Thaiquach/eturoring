@@ -15,6 +15,8 @@ import displayProfile from '../components/displayProfile.vue';
 import Home_Subject from '../Subject_views/Home_Subject.vue';
 import Home_ClassRoom from '../ClassRoom_views/Home_ClassRoom.vue';
 import Home_Schedule from '../Schedule_views/Home_Schedule.vue';
+import DashBoard from '../Admin_views/DashBoard.vue';
+import SchedulerForUser from '../Schedule_views/ScheduleForUser.vue';
 
 import ChatDialog from '../views/Chat/ChatDialog.vue';
 import ClassList from '../views/Chat/ClassList.vue';
@@ -109,6 +111,7 @@ const routes = [
     component: Home_Schedule
   },
   {
+
     path: '/chat/:receiverId/:receiverName',
     name: 'ChatDialog',
     component: ChatDialog,
@@ -120,10 +123,22 @@ const routes = [
     name: 'ClassList',
     component: ClassList,
     meta: { requiresAuth: true }
-  }
+  },
+
+  {
+    path: '/dashboard',
+    name: 'DashBoard',
+    component: DashBoard
+  },
+  {
+    path: '/schedulerforuser',
+    name: 'schedulerforuser',
+    component: SchedulerForUser
+  },
 
 
 ];
+
 
 const router = createRouter({
   history: createWebHistory(),

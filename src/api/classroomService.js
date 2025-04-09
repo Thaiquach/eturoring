@@ -12,7 +12,9 @@ export default {
   },
 
   getAllClassrooms() {
-    return axios.get(`${BASE_URL}/Classroom/get-all-classrooms`);
+    return axios.get(`${BASE_URL}/Classroom/get-all-classrooms`,{
+      headers: { Authorization: `Bearer ${token()}` }
+    });
   },
 
   deleteClassroomById(id) {
