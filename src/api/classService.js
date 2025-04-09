@@ -112,7 +112,9 @@ export default {
       }
     }).then((res) => {
       const allClasses = res.data;
-      const myClasses = allClasses.filter(c => c.tutorName && c.tutorName.toLowerCase().includes(decoded["given_name"].toLowerCase()));
+      const myClasses = allClasses.filter(c => 
+        c.tutorId === Number(tutorId)
+      );
       return myClasses;
     }).catch((err) => {
       console.error("❌ Lỗi khi tải lớp của tutor:", err);

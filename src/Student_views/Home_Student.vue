@@ -1,21 +1,19 @@
 <template>
-  <div class="container">
-    <UserSidebar />
-
-    <div class="main-content">
-      <h3>📘 Các lớp của tôi (Student)</h3>
+  <UserLayout>
+    <template #default>
+      <h3>📘 My Classes (Student)</h3>
       <table class="class-table">
         <thead>
           <tr>
             <th>#</th>
-            <th>Tên lớp</th>
-            <th>Môn học</th>
+            <th>Class</th>
+            <th>Subject</th>
             <th>Tutor</th>
             <th>Slot</th>
-            <th>Ngày bắt đầu</th>
-            <th>Ngày kết thúc</th>
-            <th>Mô tả</th>
-            <th>Học sinh</th>
+            <th>Start date</th>
+            <th>End date</th>
+            <th>Description</th>
+            <th>Students</th>
           </tr>
         </thead>
         <tbody>
@@ -32,20 +30,19 @@
               <ul v-if="classItem.studentNames?.length">
                 <li v-for="(student, idx) in classItem.studentNames" :key="idx">{{ student }}</li>
               </ul>
-              <span v-else>Không có học sinh</span>
+              <span v-else>None</span>
             </td>
           </tr>
         </tbody>
       </table>
-    </div>
-  </div>
+    </template>
+  </UserLayout>
 </template>
-
 <script setup>
 import { ref, onMounted } from 'vue';
 import jwtDecode from 'jwt-decode';
 import classService from '../api/classService';
-import UserSidebar from '../components/userSidebar.vue';
+import UserLayout from '../components/userLayout.vue';
 
 const myStudentClasses = ref([]);
 
@@ -93,33 +90,52 @@ onMounted(loadStudentClasses);
 
 .class-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   margin-top: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  border-radius: 10px;
+  overflow: hidden;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: white;
 }
 
-.class-table th,
-.class-table td {
-  border: 1px solid #ddd;
-  padding: 10px;
+.class-table thead th {
+  background-color: #D8B2D1; /* tím lavender */
+  color: #4b3d73; /* tím đậm hơn để dễ đọc */
+  padding: 14px;
+  font-weight: 600;
+  text-align: center;
+  border-bottom: 1px solid #d6d6f0;
+}
+
+/* Dòng dữ liệu */
+.class-table tbody td {
+  padding: 12px;
   text-align: center;
   vertical-align: middle;
+  border-bottom: 1px solid #f0f0f0;
 }
 
-.class-table th {
-  background-color: #f2f2f2;
-}
-
+/* Zebra stripe */
 .class-table tbody tr:nth-child(even) {
-  background-color: #f9f9f9;
+  background-color: #f9f7fc;
 }
 
+/* Hover */
 .class-table tbody tr:hover {
-  background-color: #f1f1f1;
+  background-color: #f3e9ff;
+  transition: background 0.2s ease;
 }
 
-ul {
+/* Danh sách học sinh */
+.class-table ul {
   list-style: none;
   padding: 0;
   margin: 0;
+}
+.table-container {
+  overflow-x: auto;
+  width: 100%;
 }
 </style>
