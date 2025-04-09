@@ -12,7 +12,7 @@ onMounted(async () => {
 
   if (!token.value) {
     alert('Please log in first!')
-    window.location.href = '/login' // Redirect về trang login nếu không có token
+    window.location.href = '/login'
     return
   }
 
@@ -56,25 +56,6 @@ onMounted(async () => {
 
         </div>
       </div>
-
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Class Name</th>
-            <th>Price</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="cls in classes" :key="cls.id">
-            <td>{{ cls.id }}</td>
-            <td>{{ cls.className }}</td>
-            <td>{{ cls.description }}</td>
-            <td><button disabled>Edit</button></td>
-          </tr>
-        </tbody>
-      </table>
 
     </div>
   </div>

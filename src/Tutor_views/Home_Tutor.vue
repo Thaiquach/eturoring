@@ -1,52 +1,54 @@
 <template>
-  <div class="container">
-
-    <UserSidebar />
-
-    <div class="main-content">
-      <h3>📘 Các lớp của tôi (Tutor)</h3>
-      <table class="class-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Tên lớp</th>
-            <th>Môn học</th>
-            <th>Tutor</th>
-            <th>Slot</th>
-            <th>Ngày bắt đầu</th>
-            <th>Ngày kết thúc</th>
-            <th>Mô tả</th>
-            <th>Học sinh</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(classItem, index) in myTutorClasses" :key="index">
-            <td>{{ index + 1 }}</td>
-            <td>{{ classItem.className }}</td>
-            <td>{{ classItem.subjectName }}</td>
-            <td>{{ classItem.tutorName }}</td>
-            <td>{{ classItem.totalSlot }}</td>
-            <td>{{ formatDate(classItem.startDate) }}</td>
-            <td>{{ formatDate(classItem.endDate) }}</td>
-            <td>{{ classItem.description }}</td>
-            <td>
-              <ul v-if="classItem.studentNames?.length">
-                <li v-for="(student, idx) in classItem.studentNames" :key="idx">{{ student }}</li>
-              </ul>
-              <span v-else>Không có học sinh</span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
+  <UserLayout>
+    <template #default>
+      <div class="main-content">
+        <h3>📘 My Classes (Tutor)</h3>
+        <table class="class-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Class</th>
+              <th>Subject</th>
+              <th>Tutor</th>
+              <th>Slot</th>
+              <th>Start date</th>
+              <th>End date</th>
+              <th>Description</th>
+              <th>Students</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(classItem, index) in myTutorClasses" :key="index">
+              <td>{{ index + 1 }}</td>
+              <td>{{ classItem.className }}</td>
+              <td>{{ classItem.subjectName }}</td>
+              <td>{{ classItem.tutorName }}</td>
+              <td>{{ classItem.totalSlot }}</td>
+              <td>{{ formatDate(classItem.startDate) }}</td>
+              <td>{{ formatDate(classItem.endDate) }}</td>
+              <td>{{ classItem.description }}</td>
+              <td>
+                <ul v-if="classItem.studentNames?.length">
+                  <li v-for="(student, idx) in classItem.studentNames" :key="idx">
+                    {{ student }}
+                  </li>
+                </ul>
+                <span v-else>None</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </template>
+  </UserLayout>
 </template>
+
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import jwtDecode from 'jwt-decode';
 import classService from '../api/classService';
-import UserSidebar from '../components/userSidebar.vue';
+import UserLayout from '../components/userLayout.vue';
 
 const myTutorClasses = ref([]);
 
@@ -72,7 +74,7 @@ const loadTutorClasses = async () => {
 
     const response = await classService.getAllClasses();
     myTutorClasses.value = response.data.filter((cls) =>
-      cls.tutorName && decoded?.given_name === cls.tutorName
+      cls.tutorId === Number(tutorId)
     );
   } catch (error) {
     console.error('❌ Lỗi khi tải lớp học (Tutor):', error);
@@ -83,42 +85,50 @@ onMounted(loadTutorClasses);
 </script>
 
 <style scoped>
-.container {
-  display: flex;
-}
-
 .main-content {
   flex: 1;
   padding: 20px;
 }
 
+/* Bảng lớp học (đồng bộ với HomeStudent) */
 .class-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   margin-top: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  border-radius: 10px;
+  overflow: hidden;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: white;
 }
 
-.class-table th,
-.class-table td {
-  border: 1px solid #ddd;
-  padding: 10px;
+.class-table thead th {
+  background-color: #D8B2D1; /* tím lavender */
+  color: #4b3d73;
+  padding: 14px;
+  font-weight: 600;
+  text-align: center;
+  border-bottom: 1px solid #d6d6f0;
+}
+
+.class-table tbody td {
+  padding: 12px;
   text-align: center;
   vertical-align: middle;
-}
-
-.class-table th {
-  background-color: #f2f2f2;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .class-table tbody tr:nth-child(even) {
-  background-color: #f9f9f9;
+  background-color: #f9f7fc;
 }
 
 .class-table tbody tr:hover {
-  background-color: #f1f1f1;
+  background-color: #f3e9ff;
+  transition: background 0.2s ease;
 }
 
-ul {
+.class-table ul {
   list-style: none;
   padding: 0;
   margin: 0;

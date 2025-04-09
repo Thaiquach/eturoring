@@ -109,9 +109,10 @@ const routes = [
     component: Home_Schedule
   },
   {
-    path: '/chat/:receiverId',
+    path: '/chat/:receiverId/:receiverName',
     name: 'ChatDialog',
     component: ChatDialog,
+    props: true,
     meta: { requiresAuth: true }
   },
   {

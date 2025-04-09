@@ -210,10 +210,10 @@ export default {
 /* Fixed icon cho New Blog */
 .new-blog-icon {
   position: fixed;
-  top: 80px;
+  top: 70px;
   right: 10px;
   background-color: #fff;
-  padding: 10px 15px;
+  padding: 10px 15px;  
   border-radius: 30px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
   cursor: pointer;

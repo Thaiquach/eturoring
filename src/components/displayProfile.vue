@@ -1,42 +1,46 @@
 <template>
-  <div class="profile">
-    <h2>Thông Tin Profile</h2>
-    <div v-if="profile">
-      <!-- Hiển thị thông tin chung từ AppUser -->
-      <p><strong>Họ và tên:</strong> {{ profile.user?.fullName }}</p>
-      <p><strong>Tên đăng nhập:</strong> {{ profile.user?.userName }}</p>
-      <p><strong>Email:</strong> {{ profile.user?.email }}</p>
+  <UserLayout>
+    <template #default>
+      <div class="profile-container">
+        <h2 class="profile-title">👤 Profile</h2>
+        <div v-if="profile" class="profile-card">
+          <!-- Thông tin chung -->
+          <div class="section">
+            <p><strong>👤 Full Name:</strong> {{ profile.user?.fullName }}</p>
+            <p><strong>👤 UserName:</strong> {{ profile.user?.userName }}</p>
+            <p><strong>📧 Email:</strong> {{ profile.user?.email }}</p>
+          </div>
 
-      <!-- Nếu là Student -->
-      <div v-if="isStudent && profile.studentCode">
-        <p><strong>Mã sinh viên:</strong> {{ profile.studentCode }}</p>
-        <p><strong>Khóa học:</strong> {{ profile.course }}</p>
-        <p><strong>Trạng thái:</strong> {{ profile.status }}</p>
-      </div>
+          <!-- Nếu là Student -->
+          <div class="section" v-if="isStudent && profile.studentCode">
+            <h4>🎓 Student </h4>
+            <p><strong>StudentCode:</strong> {{ profile.studentCode }}</p>
+            <p><strong>Course:</strong> {{ profile.course }}</p>
+            <p><strong>Note:</strong> {{ profile.status }}</p>
+          </div>
 
-      <!-- Nếu là Tutor -->
-      <div v-else-if="!isStudent && profile.department">
-        <p><strong>Bộ môn:</strong> {{ profile.department }}</p>
-        <p><strong>Số năm kinh nghiệm:</strong> {{ profile.experienceYears }}</p>
-        <p><strong>Đánh giá:</strong> {{ profile.rating }}</p>
+          <!-- Nếu là Tutor -->
+          <div class="section" v-else-if="!isStudent && profile.department">
+            <h4>📚 Tutor </h4>
+            <p><strong>Department:</strong> {{ profile.department }}</p>
+            <p><strong>ExperienceYears:</strong> {{ profile.experienceYears }}</p>
+            <p><strong>Rate: </strong> {{ profile.rating }}</p>
+          </div>
+        </div>
+
+        <div v-else class="loading-text">
+          Loading profile...
+        </div>
       </div>
-    </div>
-    <div v-else>
-      <p>Đang tải thông tin profile...</p>
-    </div>
-  </div>
+    </template>
+  </UserLayout>
 </template>
-
----
-
-### ✅ **Script Đã Chỉnh Sửa**
-
-```javascript
 <script>
 import { getUserFromToken } from "../helpers/authHelper";
 import { getStudentProfile, getTutorProfile } from "../api/profileService";
-
+import UserLayout from "./userLayout.vue";
 export default {
+  components: { UserLayout },
   data() {
     return {
       profile: null,
@@ -125,9 +129,45 @@ export default {
 
 
 <style scoped>
-.profile {
-  max-width: 600px;
+.profile-container {
+  max-width: 700px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 30px 20px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.profile-title {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #4b3d73;
+}
+
+.profile-card {
+  background: #f9f7fc;
+  border: 1px solid #d8c2e0;
+  border-radius: 10px;
+  padding: 25px 30px;
+  box-shadow: 0 4px 10px rgba(80, 67, 130, 0.1);
+}
+
+.section {
+  margin-bottom: 20px;
+}
+
+.section h4 {
+  margin-bottom: 10px;
+  color: #7c4dff;
+}
+
+p {
+  margin: 6px 0;
+  color: #333;
+}
+
+.loading-text {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  margin-top: 40px;
 }
 </style>
