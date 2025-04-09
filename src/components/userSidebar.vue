@@ -1,7 +1,7 @@
 <template>
     <aside class="user-sidebar">
       <ul>
-        <li><router-link to="/schedule">Schedule</router-link></li>
+        <li><router-link to="/schedulerforuser">Schedule</router-link></li>
         <li><router-link to="/manageblog">Blog</router-link></li>
         <li><router-link to="/message">Message</router-link></li>
         <li><router-link to="/profile">Profile</router-link></li>
