@@ -142,6 +142,7 @@ export default {
 
 <style scoped>
 .user-topbar {
+
   position: fixed;
   top: 0;
   left: 240px;
@@ -274,6 +275,10 @@ export default {
 
 .notification-item.unread {
   font-weight: bold;
-  background-color: #fff7f9;
+  background-color: #eec5e0;
+  color: rgb(224, 11, 103);
+  padding: 10px;
+  text-align: right;
+
 }
 </style>

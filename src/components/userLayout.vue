@@ -49,6 +49,7 @@ export default {
 }
 
 .main-content {
+
   margin-left: 210px;
   flex: 1;
   display: flex;
@@ -76,6 +77,7 @@ export default {
 
 /* Sticky Sidebar */
 .sticky-sidebar {
+
   position: fixed;         
   top: 0;
   left: 0;
@@ -85,6 +87,7 @@ export default {
   background-color: #ffe4ec; 
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
   overflow-y: auto;
+
 }
 
 

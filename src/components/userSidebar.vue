@@ -22,9 +22,11 @@ export default {
   name: 'userSidebar',
   computed: {
     role() {
+
     const role = localStorage.getItem("role");
     return role ? role.toLowerCase() : "student";
   },
+
     roleIcon() {
       return this.role === 'tutor'
         ? new URL('../assets/tutor_icon.png', import.meta.url).href
@@ -73,12 +75,14 @@ export default {
 }
 
 .avatar img {
+
   width: 100px;
   height: 100px;
   margin-bottom: 2rem;
   border-radius: 50%;
   object-fit: cover;
   margin-top: 2rem;
+
 }
 
 .nav-links {
@@ -87,6 +91,7 @@ export default {
   width: 100%;
   gap: 1rem;
   margin-top: 35px;
+
 }
 
 .nav-btn {
