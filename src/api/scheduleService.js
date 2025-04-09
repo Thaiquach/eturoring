@@ -4,6 +4,8 @@ import axios from 'axios';
 const BASE_URL = 'https://localhost:7050/api';
 const token = () => localStorage.getItem('token');
 
+
+
 export default {
   // 🔄 Tạo 1 lịch học đơn
   createSchedule(payload) {

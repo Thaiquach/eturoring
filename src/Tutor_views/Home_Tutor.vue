@@ -70,13 +70,15 @@ const loadTutorClasses = async () => {
     }
 
     const response = await classService.getAllClasses();
-    myTutorClasses.value = response.data.filter((cls) =>
-      cls.tutorName && decoded?.given_name === cls.tutorName
+    myTutorClasses.value = response.data.filter(
+      (cls) => cls.tutorId === Number(tutorId)
     );
+    console.log("✅ Các lớp của tutor:", myTutorClasses.value);
   } catch (error) {
     console.error('❌ Lỗi khi tải lớp học (Tutor):', error);
   }
 };
+
 
 onMounted(loadTutorClasses);
 </script>
