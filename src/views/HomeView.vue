@@ -26,6 +26,7 @@ const dashboard = ref({
 });
 
 onMounted(async () => {
+
   try {
     const res = await dashboardService.getDashboardData();
     dashboard.value = res.data;
@@ -116,6 +117,7 @@ const chartOptions = {
         </tbody>
       </table>
     </div>
+
 
     </div>
   </div>

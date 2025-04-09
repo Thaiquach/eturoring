@@ -24,6 +24,14 @@ export default {
     });
   },
 
+  getClassById(classId) {
+    const token = localStorage.getItem('token');
+    return axios.get(`${BASE_URL}/Class/get-class/${classId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  },
   // Lấy danh sách tutor (đính kèm token)
   getAllTutors() {
     const token = localStorage.getItem('token');
@@ -38,6 +46,7 @@ export default {
   getAllSubjects() {
     return axios.get(`${BASE_URL}/Subjects/get-all-subjects`);
   },
+
   getAllClasses() {
     const token = localStorage.getItem('token');
     return axios.get(`${BASE_URL}/Class/get-all-classes`, {
@@ -46,6 +55,7 @@ export default {
       }
     });
   },
+  
   updateClass(id, classData) {
     const token = localStorage.getItem('token');
     return axios.put(`${BASE_URL}/Class/update-class/${id}`, classData, {
@@ -102,7 +112,9 @@ export default {
       }
     }).then((res) => {
       const allClasses = res.data;
-      const myClasses = allClasses.filter(c => c.tutorName && c.tutorName.toLowerCase().includes(decoded["given_name"].toLowerCase()));
+      const myClasses = allClasses.filter(c => 
+        c.tutorId === Number(tutorId)
+      );
       return myClasses;
     }).catch((err) => {
       console.error("❌ Lỗi khi tải lớp của tutor:", err);

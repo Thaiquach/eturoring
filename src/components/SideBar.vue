@@ -14,7 +14,7 @@
           <router-link to="/Blog">Blog</router-link>
         </li>
         <li>
-          <router-link to="/Doc">Doc</router-link>
+          <router-link to="/classlist">Chat</router-link>
         </li>
         <li>
           <router-link to="/Meetting">Meeting</router-link>
