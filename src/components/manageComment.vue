@@ -1,5 +1,5 @@
 <template>
-    <div class="comments-section">
+    <div :class="['comments-section', { 'admin-tone': isAdmin }]">
       <h4 class="comments-title">Comments</h4>
   
       <!-- Danh sách comment, hiển thị tối đa theo visibleComments -->
@@ -52,7 +52,7 @@
       </div>
   
       <!-- Form thêm comment mới -->
-      <div class="add-comment">
+      <div v-if="currentUserRole !== 'Admin'" class="add-comment">
         <textarea
           v-model="newComment"
           placeholder="Comment..."
@@ -73,6 +73,10 @@
       blogId: {
         type: Number,
         required: true
+      },
+      isAdmin: {
+        type: Boolean,
+        default: false
       }
     },
     data() {
@@ -313,5 +317,53 @@
     border-radius: 4px;
     cursor: pointer;
   }
+
+/*changing for admin */
+
+ 
+.admin-tone {
+  background-color: #e3f2fd;
+  border: 1px solid #90caf9;
+}
+
+.admin-tone .comments-title {
+  color: #0d47a1;
+}
+
+.admin-tone .comment-item {
+  background-color: #eaf4fd;
+  border: 1px solid #64b5f6;
+}
+
+.admin-tone .comment-meta {
+  color: #1565c0;
+}
+
+.admin-tone .action-btn:hover {
+  background-color: #bbdefb;
+}
+
+.admin-tone .edit-form textarea,
+.admin-tone .add-comment textarea {
+  border: 1px solid #64b5f6;
+  background-color: #f1f8ff;
+}
+
+.admin-tone .btn-update,
+.admin-tone .add-comment button {
+  background-color: #1976d2;
+  color: white;
+}
+
+.admin-tone .btn-cancel {
+  background-color: #90caf9;
+  color: white;
+}
+
+.admin-tone .toggle-comments button {
+  background-color: #64b5f6;
+  color: white;
+}
+/*changing for admin */
   </style>
   

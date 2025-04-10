@@ -21,7 +21,7 @@ export function connectToNotificationHub(token, onReceiveNotification) {
 
   // Tạo mới kết nối nếu chưa có
   notificationConnection = new signalR.HubConnectionBuilder()
-    .withUrl('https://localhost:7050/notificationHub', {
+    .withUrl('https://projectcomp1640-asfhatcmhzf6hghg.eastasia-01.azurewebsites.net/notificationHub', {
       accessTokenFactory: () => token
     })
     .withAutomaticReconnect()

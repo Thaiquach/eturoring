@@ -140,47 +140,43 @@ const submitForm = async () => {
 
 <style scoped>
 .form-container {
-  width: 280px;
-  padding: 16px;
-  background: #ffffff;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 16px 20px 0 20px;
+  background: #e3f2fd;
   border-radius: 10px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
-  text-align: center;
-  transition: transform 0.2s ease-in-out;
-}
-
-.form-container:hover {
-  transform: translateY(-5px);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .input-group {
-  position: relative;
-  margin-bottom: 12px;
   display: flex;
   align-items: center;
+  margin-bottom: 10px; /* ✅ giảm khoảng cách */
+}
+
+.input-label {
+  flex: 0 0 100px;
+  color: #1976d2; /* blue label */
+  font-weight: bold;
+  text-align: left;
+  margin-right: 10px;
+  font-size: 14px;
 }
 
 .input-group input {
   width: 100%;
-  padding: 8px;
-  border: none;
-  border-bottom: 2px solid #28a745;
+  padding: 6px 8px;
   font-size: 14px;
+  border: 1px solid #90caf9;
+  border-radius: 4px;
+  background: #ffffff;
   outline: none;
-  background: transparent;
-  transition: border-bottom 0.3s ease;
+  transition: border-color 0.3s ease;
 }
 
 .input-group input:focus {
-  border-bottom: 2px solid #218838;
-}
-
-.input-label {
-  flex: 0 0 80px;
-  color: #28a745;
-  font-weight: bold;
-  text-align: left;
-  margin-right: 8px;
+  border-color: #1976d2;
 }
 
 .select-group {
@@ -190,38 +186,37 @@ const submitForm = async () => {
 
 .select-group select {
   width: 100%;
-  padding: 8px;
-  border: none;
-  border-bottom: 2px solid #28a745;
+  padding: 6px 8px;
   font-size: 14px;
-  outline: none;
-  background: transparent;
-  transition: border-bottom 0.3s ease;
-  -webkit-appearance: none;
-  -moz-appearance: none;
+  border: 1px solid #90caf9;
+  border-radius: 4px;
+  background: #fff;
   appearance: none;
+  outline: none;
+  transition: border-color 0.3s ease;
 }
 
 .select-group select:focus {
-  border-bottom: 2px solid #218838;
+  border-color: #1976d2;
 }
 
 .select-group .custom-arrow {
   position: absolute;
-  right: 8px;
+  right: 10px;
   top: 50%;
   transform: translateY(-50%);
+  font-size: 12px;
+  color: #1976d2;
   pointer-events: none;
-  font-size: 14px;
-  color: #28a745;
 }
 
 button {
+  margin-top: 10px;
   width: 100%;
-  padding: 8px;
+  padding: 10px;
   font-size: 14px;
   font-weight: bold;
-  background: #28a745;
+  background-color: #2196f3;
   color: white;
   border: none;
   border-radius: 6px;
@@ -230,11 +225,7 @@ button {
 }
 
 button:hover {
-  background: #218838;
+  background-color: #1976d2;
 }
 
-/* Green Theme Border */
-.tutor-theme {
-  border-left: 5px solid #28a745;
-}
 </style>
