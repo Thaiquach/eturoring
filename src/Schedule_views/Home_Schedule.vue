@@ -1,116 +1,125 @@
 <template>
-  <div class="schedule-form">
-    <h2>🗕️ Tạo lịch học</h2>
-    <form @submit.prevent="handleCreate">
-      <label>Chọn lớp học:</label>
-      <select v-model="form.classId" required>
-        <option v-for="cls in classes" :key="cls.id" :value="cls.id">
-          {{ cls.className }}
-        </option>
-      </select>
+  <adminLayout>
+    <div class="schedule-container">
+      <div class="form-section">
+        <h2>{{ isEditing ? '📏 Update schedule' : '➕ New Schedule' }}</h2>
+        <form @submit.prevent="handleCreate">
+          <div class="form-group">
+            <label>Select Class:</label>
+            <select v-model="form.classId" required>
+              <option v-for="cls in classes" :key="cls.id" :value="cls.id">{{ cls.className }}</option>
+            </select>
+          </div>
 
-      <label>Thứ (0=CN - 6=Thứ 7):</label>
-      <input type="number" v-model.number="form.day" min="0" max="6" required />
+          <div class="form-group">
+            <label>Day (0 = Sunday -- 6 = Saturday):</label>
+            <input type="number" v-model.number="form.day" min="0" max="6" required />
+          </div>
 
-      <div v-if="!isRecurring">
-        <label>Ngày học:</label>
-        <input v-model="form.scheduleDate" type="date" required />
-        <p v-if="isDateMismatch" style="color: red">
-          ⚠️ Ngày không khớp với thứ đã chọn!
-        </p>
+          <div class="form-group" v-if="!isRecurring">
+            <label>Date:</label>
+            <input v-model="form.scheduleDate" type="date" required />
+            <p v-if="isDateMismatch" class="warning-text">⚠️ Date does not match order selection!</p>
+          </div>
+
+          <div v-if="isRecurring && selectedClassDates" class="info-text">
+            📅 The schedule will be counted from <strong>{{ selectedClassDates.start }}</strong> to
+            <strong>{{ selectedClassDates.end }}</strong> of the class.
+          </div>
+
+          <div v-if="isRecurring && form.scheduleDate" class="form-group">
+            <label>Actual start date:</label>
+            <input type="date" :value="form.scheduleDate" disabled />
+          </div>
+
+          <p v-if="isStartDateMismatch" class="warning-text">
+            ⚠️ The class start date does not match the day you selected.
+          </p>
+
+          <div class="form-group">
+            <label>🕒 Slot:</label>
+            <select v-model="form.slot" required>
+              <option :value="1">Slot 1</option>
+              <option :value="2">Slot 2</option>
+              <option :value="3">Slot 3</option>
+              <option :value="4">Slot 4</option>
+            </select>
+            <small><strong>Time:</strong> {{ getSlotTime(form.slot) }}</small>
+          </div>
+
+          <div class="form-group">
+            <label>Link meetting:</label>
+            <input v-model="form.linkMeeting" required />
+          </div>
+
+          <div class="form-group">
+            <label>Room:</label>
+            <select v-model="form.classroomId" required>
+              <option v-for="room in classrooms" :key="room.id" :value="room.id">{{ room.name }}</option>
+            </select>
+          </div>
+
+          <div class="form-group checkbox">
+            <label>
+              <input type="checkbox" v-model="isRecurring" />
+              🔁 Create a weekly repetition
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">
+              {{ isEditing ? '💾 Update' : '➕ Add New' }}
+            </button>
+            <button v-if="isEditing" type="button" @click="cancelEdit" class="btn-cancel">❌ Cancel</button>
+          </div>
+        </form>
       </div>
 
-      <p v-if="isRecurring && selectedClassDates" style="font-style: italic">
-        🗕️ Ngày học sẽ được tự động tính từ ngày bắt đầu đến ngày kết thúc của lớp học. Nếu vẫn muốn tạo mới thì ngày
-        bắt đầu sẽ được từ động lùi để phù hợp với với thứ đã chọnchọn
-
-        <strong>{{ selectedClassDates.start }}</strong> đến
-        <strong>{{ selectedClassDates.end }}</strong> của lớp học.
-      </p>
-
-      <div v-if="isRecurring && form.scheduleDate">
-        <label>Ngày bắt đầu thực tế:</label>
-        <input type="date" :value="form.scheduleDate" disabled />
+      <div class="table-section">
+        <h2>📋 List of class schedules</h2>
+        <table class="schedule-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Date</th>
+              <th>Day</th>
+              <th>Slot</th>
+              <th>Time</th>
+              <th>Link</th>
+              <th>Class</th>
+              <th>Room</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(schedule, index) in schedules" :key="schedule.id">
+              <td>{{ index + 1 }}</td>
+              <td>{{ formatDate(schedule.scheduleDate) }}</td>
+              <td>{{ getDayLabel(schedule.day) }}</td>
+              <td>Slot {{ schedule.slot }}</td>
+              <td>{{ getSlotTime(schedule.slot) }}</td>
+              <td><a :href="schedule.linkMeeting" target="_blank">🔗 Link</a></td>
+              <td>{{ getClassName(schedule.classId) }}</td>
+              <td>{{ getRoomName(schedule.classroomId) }}</td>
+              <td>
+                <button @click="handleEdit(schedule)" class="btn-edit">✏️</button>
+                <button @click="handleDelete(schedule.id)" class="btn-delete">🗑</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-
-      <p v-if="isStartDateMismatch" style="color: orange; font-style: italic">
-        ⚠️ Ngày bắt đầu của lớp không trùng thứ bạn chọn.
-      </p>
-
-      <label for="slot">🕒 Chọn ca học:</label>
-      <select v-model="form.slot" id="slot" required>
-        <option :value="1">Slot 1</option>
-        <option :value="2">Slot 2</option>
-        <option :value="3">Slot 3</option>
-        <option :value="4">Slot 4</option>
-      </select>
-      <p><strong>Khung giờ:</strong> {{ getSlotTime(form.slot) }}</p>
-
-      <label>Link học:</label>
-      <input v-model="form.linkMeeting" required />
-
-      <label>Phòng học:</label>
-      <select v-model="form.classroomId" required>
-        <option v-for="room in classrooms" :key="room.id" :value="room.id">
-          {{ room.name }}
-        </option>
-      </select>
-
-      <label>
-        <input type="checkbox" v-model="isRecurring" />
-        🔁 Tạo lặp mỗi tuần
-      </label>
-
-      <button type="submit">
-        {{ isEditing ? '📏 Cập nhật lịch học' : '➕ Tạo lịch học' }}
-      </button>
-      <div v-if="isEditing">
-        <button type="button" @click="cancelEdit">❌ Huỷ cập nhật</button>
-      </div>
-    </form>
-  </div>
-
-  <div class="schedule-list">
-    <h2>🗕️ Danh sách lịch học</h2>
-    <table class="schedule-table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Ngày học</th>
-          <th>Thứ</th>
-          <th>Ca học</th>
-          <th>Giờ học</th>
-          <th>Link học</th>
-          <th>Lớp</th>
-          <th>Phòng</th>
-          <th>Hành động</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(schedule, index) in schedules" :key="schedule.id">
-          <td>{{ index + 1 }}</td>
-          <td>{{ formatDate(schedule.scheduleDate) }}</td>
-          <td>{{ getDayLabel(schedule.day) }}</td>
-          <td>Slot {{ schedule.slot }}</td>
-          <td>{{ getSlotTime(schedule.slot) }}</td>
-          <td><a :href="schedule.linkMeeting" target="_blank">🔗 Link</a></td>
-          <td>{{ getClassName(schedule.classId) }}</td>
-          <td>{{ getRoomName(schedule.classroomId) }}</td>
-          <td>
-            <button @click="handleEdit(schedule)">✏️ Sửa</button>
-            <button @click="handleDelete(schedule.id)">🗑 Xoá</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+    </div>
+  </adminLayout>
 </template>
+
 
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue';
 import scheduleService from '../api/scheduleService';
 import classService from '../api/classService';
 import classroomService from '../api/classroomService';
+import adminLayout from '../components/adminLayout.vue';
 
 const form = ref({
   day: 1,
@@ -308,22 +317,135 @@ watch([() => form.value.day, () => form.value.classId], ([newDay, newClassId]) =
 </script>
 
 <style scoped>
-.schedule-form {
-  margin-bottom: 2rem;
+.schedule-container {
+  max-width: 1100px;
+  margin: 30px auto;
+  padding: 20px;
+}
+
+.form-section {
+  background-color: #e3f2fd;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(33, 150, 243, 0.1);
+  margin-bottom: 30px;
 }
 
 .schedule-table {
   width: 100%;
   border-collapse: collapse;
-}
-
-.schedule-table th,
-.schedule-table td {
-  border: 1px solid #ddd;
-  padding: 8px;
+  background: white;
+  border: 1px solid #bbdefb;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
 }
 
 .schedule-table th {
-  background-color: #f2f2f2;
+  background-color: #bbdefb;
+  color: #0d47a1;
+  padding: 12px;
+  text-align: center;
+}
+
+.schedule-table td {
+  padding: 10px;
+  text-align: center;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.schedule-table tr:hover {
+  background-color: #f1faff;
+  transition: background-color 0.2s ease;
+}
+
+.form-group {
+  margin-bottom: 14px;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #90caf9;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+  transition: border 0.3s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #1976d2;
+  outline: none;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.btn-primary {
+  background-color: #2196f3;
+  color: white;
+  padding: 10px 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #1976d2;
+}
+
+.btn-cancel {
+  background-color: #f44336;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-edit {
+  background: #64b5f6;
+  color: white;
+  padding: 6px 8px;
+  border: none;
+  border-radius: 4px;
+  margin-right: 5px;
+}
+
+.btn-delete {
+  background: #ef5350;
+  color: white;
+  padding: 6px 8px;
+  border: none;
+  border-radius: 4px;
+}
+
+.warning-text {
+  color: orange;
+  font-style: italic;
+  font-size: 13px;
+}
+
+.info-text {
+  font-style: italic;
+  font-size: 13px;
+  margin-bottom: 10px;
+  color: #1a237e;
+}
+
+.checkbox input {
+  margin-right: 8px;
+}
+
+.table-section h2 {
+  margin-bottom: 16px;
+  color: #0d47a1;
 }
 </style>

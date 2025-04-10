@@ -16,7 +16,7 @@ export function connectToMessageHub(token, onReceiveMessage) {
 
   // Tạo mới kết nối nếu chưa có
   connection = new signalR.HubConnectionBuilder()
-    .withUrl('https://localhost:7050/MessageHub', {
+    .withUrl('https://projectcomp1640-asfhatcmhzf6hghg.eastasia-01.azurewebsites.net/MessageHub', {
       accessTokenFactory: () => token
     })
     .withAutomaticReconnect()

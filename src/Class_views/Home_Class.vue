@@ -1,6 +1,7 @@
 <template>
-  <div class="home-class">
-    <h2>Tạo lớp học mới</h2>
+  <adminLayout>
+    <div class="home-class">
+    <h2>New Class</h2>
     <form @submit.prevent="handleCreateOrUpdateClass">
       <!-- Thông tin lớp học -->
       <div>
@@ -8,14 +9,14 @@
         <input v-model="classForm.className" type="text" required />
       </div>
       <div>
-        <label>Chọn Tutor:</label>
+        <label>Add Tutor:</label>
         <multiselect v-model="selectedTutor" :options="tutors" :multiple="false" label="fullName" track-by="id"
-          placeholder="Chọn Tutor"></multiselect>
+          placeholder="Add Tutor"></multiselect>
       </div>
       <div>
-        <label>Chọn Subject:</label>
+        <label>Add Subject:</label>
         <multiselect v-model="selectedSubject" :options="subjects" :multiple="false" label="subjectName" track-by="id"
-          placeholder="Chọn Subject"></multiselect>
+          placeholder="Add Subject"></multiselect>
       </div>
       <div>
         <label>Total Slot:</label>
@@ -36,9 +37,9 @@
 
       <!-- Chọn nhiều học sinh từ danh sách load về -->
       <div>
-        <label>Chọn học sinh:</label>
+        <label>Add multiple students:</label>
         <multiselect v-model="selectedStudents" :options="students" :multiple="true" label="fullName" track-by="id"
-          placeholder="Chọn học sinh">
+          placeholder="Select student">
           <!-- Hiển thị studentCode + fullName trong dropdown -->
           <template #option="{ option }">
             <div>
@@ -65,26 +66,26 @@
       </div>
 
       <button type="submit" class="btn-save">
-        {{ isEditMode ? "💾 Cập nhật lớp học" : "➕ Tạo lớp học" }}
+        {{ isEditMode ? "💾 Update" : "➕ Add New" }}
       </button>
     </form>
   </div>
   <div class="class-list">
-    <h3>📚 Danh sách lớp học</h3>
+    <h3>📚 LIST CLASS</h3>
     <table class="class-table">
       <thead>
         <tr>
           <th>#</th>
           <th>ID</th> <!-- Thêm cột ID -->
-          <th>Tên lớp</th>
+          <th>Class Name</th>
           <th>Tutor</th>
           <th>Subject</th>
           <th>Slot</th>
-          <th>Ngày bắt đầu</th>
-          <th>Ngày kết thúc</th>
-          <th>Mô tả</th>
-          <th>Học sinh</th>
-          <th>Hành động</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th>Description</th>
+          <th>Students</th>
+          <th>Action</th>
         </tr>
       </thead>
       <tbody>
@@ -92,42 +93,45 @@
         <tr v-for="(classItem, index) in classes" :key="index">
           <td>{{ index + 1 }}</td>
           <td>{{ classItem.id || 'N/A' }}</td> <!-- Hiển thị ID -->
-          <td>{{ classItem.className || 'Không có tên lớp' }}</td>
-          <td>{{ classItem.tutorName || 'Không có tutor' }}</td>
-          <td>{{ classItem.subjectName || 'Không có môn học' }}</td>
+          <td>{{ classItem.className || 'Has no class name' }}</td>
+          <td>{{ classItem.tutorName || 'Has no tutor' }}</td>
+          <td>{{ classItem.subjectName || 'Has no subject' }}</td>
           <td>{{ classItem.totalSlot || 0 }}</td>
           <!-- Hiển thị startDate và endDate từ backend -->
           <td>{{ formatDate(classItem.startDate) }}</td>
           <td>{{ formatDate(classItem.endDate) }}</td>
-          <td>{{ classItem.description || 'Không có mô tả' }}</td>
+          <td>{{ classItem.description || 'No description' }}</td>
           <td>
             <ul v-if="classItem.studentNames && classItem.studentNames.length > 0">
               <li v-for="(student, idx) in classItem.studentNames" :key="idx">
                 {{ student }}
               </li>
             </ul>
-            <span v-else>Không có học sinh</span>
+            <span v-else>Empty student</span>
           </td>
           <!-- ✅ Nút hành động để chỉnh sửa/xóa -->
           <td>
-            <button @click="editClass(classItem)" class="btn-edit">✏️ Chỉnh sửa</button>
-            <button @click="deleteClass(classItem.id)" class="btn-delete">🗑️ Xóa</button>
+            <button @click="editClass(classItem)" class="btn-edit">✏️ Update</button>
+            <button @click="deleteClass(classItem.id)" class="btn-delete">🗑️ Delete</button>
           </td>
         </tr>
       </tbody>
     </table>
   </div>
 
+  </adminLayout>
+  
 </template>
 
 <script>
 import Multiselect from 'vue-multiselect';
 import classService from '../api/classService';
 import 'vue-multiselect/dist/vue-multiselect.css';
+import adminLayout from '../components/adminLayout.vue';
 
 export default {
   name: 'Home_Class',
-  components: { Multiselect },
+  components: { Multiselect,adminLayout },
   data() {
     return {
       isEditMode: false, // ✅ Trạng thái cập nhật hoặc thêm mới
@@ -348,79 +352,153 @@ export default {
 </script>
 
 <style scoped>
-/* Thêm CSS tùy chỉnh nếu cần */
 .home-class {
-  max-width: 600px;
-  margin: 0 auto;
+  max-width: 800px;
+  margin: 20px auto;
+  background: #e3f2fd;
+  padding: 20px 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.1);
+  transition: all 0.3s ease;
 }
 
-.home-class form>div {
-  margin-bottom: 15px;
+.home-class h2 {
+  color: #0d47a1;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+form > div {
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: bold;
+  margin-bottom: 6px;
+  color: #1565c0;
+}
+
+input,
+textarea {
+  padding: 10px;
+  border: 1px solid #90caf9;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+  outline: none;
+  transition: border-color 0.3s ease;
+  min-height: 10px;
+}
+
+input:focus,
+textarea:focus {
+  border-color: #1976d2;
+}
+
+.multiselect {
+  border: 1px solid #90caf9 !important;
+  border-radius: 6px !important;
+  padding: 4px !important;
+}
+
+.btn-save {
+  width: 100%;
+  padding: 12px;
+  background-color: #2196f3;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 16px;
+}
+
+.btn-save:hover {
+  background-color: #1976d2;
+}
+
+.class-list {
+  max-width: 100%;
+  padding: 40px;
+  background: #e1f5fe;
+  border-radius: 12px;
+  margin: 40px auto;
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.05);
+}
+
+.class-list h3 {
+  color: #0d47a1;
+  margin-bottom: 20px;
 }
 
 .class-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
-}
-
-.class-table th,
-.class-table td {
-  border: 1px solid #ddd;
-  padding: 10px;
-  text-align: center;
+  background: #ffffff;
+  border: 1px solid #bbdefb;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .class-table th {
-  background-color: #f2f2f2;
+  background-color: #bbdefb;
+  color: #0d47a1;
+  padding: 12px;
+  text-align: center;
 }
 
-.class-table tbody tr:nth-child(even) {
-  background-color: #f9f9f9;
+.class-table td {
+  padding: 10px;
+  border-bottom: 1px solid #e0e0e0;
+  text-align: center;
 }
 
-.class-table tbody tr:hover {
-  background-color: #f1f1f1;
+.class-table tr:hover {
+  background-color: #e3f2fd;
+  transition: background-color 0.3s ease;
 }
 
 ul {
-  list-style-type: none;
-  /* Loại bỏ kiểu dấu đầu dòng */
-  padding: 0;
-  /* Xóa padding mặc định */
+  list-style-type: disc;
+  padding-left: 20px;
   margin: 0;
-  /* Xóa margin mặc định */
 }
 
 li {
-  padding: 5px 0;
-  /* Thêm khoảng cách giữa các mục nếu cần */
+  padding: 4px 0;
+  color: #333;
 }
 
-.btn-save {
-  background-color: #2196F3;
+.btn-edit {
+  background: #64b5f6;
   color: white;
-  padding: 5px 10px;
+  padding: 6px 10px;
   border: none;
-  cursor: pointer;
   border-radius: 5px;
+  margin-right: 5px;
+  cursor: pointer;
+  transition: 0.3s ease;
 }
 
-.btn-save:hover {
-  background-color: #1e88e5;
+.btn-edit:hover {
+  background-color: #42a5f5;
 }
 
-.btn-cancel {
-  background-color: #f44336;
+.btn-delete {
+  background: #ef5350;
   color: white;
-  padding: 5px 10px;
+  padding: 6px 10px;
   border: none;
-  cursor: pointer;
   border-radius: 5px;
-  margin-left: 10px;
+  cursor: pointer;
+  transition: 0.3s ease;
 }
 
-.btn-cancel:hover {
-  background-color: #e53935;
+.btn-delete:hover {
+  background-color: #d32f2f;
 }
+
 </style>

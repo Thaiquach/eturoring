@@ -2,8 +2,7 @@
 import { ref, onMounted } from 'vue';
 import tutorService from '../api/tutorService';
 import CreateTutorForm from '../components/createTutorForm.vue';
-import SideBar from '../components/SideBar.vue';
-import TopBar from '../components/TopBar.vue';
+import adminLayout from '../components/adminLayout.vue'; // ✅ sử dụng layout
 
 const { deleteTutor } = tutorService;
 const tutors = ref([]);
@@ -39,130 +38,103 @@ const editTutor = (tutor) => {
 const handleTutorUpdated = (updatedTutor) => {
   const index = tutors.value.findIndex(t => t.id === updatedTutor.id);
   if (index !== -1) {
-    tutors.value[index] = updatedTutor; // cập nhật tutor đã có
+    tutors.value[index] = updatedTutor;
   } else {
-    tutors.value.push(updatedTutor); // thêm mới tutor
+    tutors.value.push(updatedTutor);
   }
 };
 </script>
 
 <template>
-  <div class="layout-container">
-    <SideBar />
-    <div class="main">
-      <TopBar />
-      <div class="content tutor-theme">
-        <div class="btn-group">
-          <router-link class="btn inactive" to="/manageStudent">Student</router-link>
-          <router-link class="btn active" to="/manageTutor">Tutor</router-link>
-        </div>
+  <adminLayout>
+    <div class="tutor-theme">
+    
 
-        <h2>Tutor Management</h2>
-        <CreateTutorForm :editingTutor="editingTutor" @tutorUpdated="loadTutors" />
+      <CreateTutorForm
+        :editingTutor="editingTutor"
+        @tutorUpdated="loadTutors"
+      />
 
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>FullName</th>
-              <th>Email</th>
-              <th>UserName</th>
-              
-              <th>Department</th>
-              <th>experienceYears</th>
-              <th>rating</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="tutor in tutors" :key="tutor.id">
-              
-              <td>{{ tutor.user.fullName }}</td>
-              <td>{{ tutor.user.email }}</td>
-              <td>{{ tutor.user.userName }}</td>
-              <td>{{ tutor.department }}</td>          
-              <td>{{ tutor.experienceYears }}</td>
-              <td>{{ tutor.rating }}</td>
-              <td>
-                <button class="edit-btn" @click="editTutor(tutor)">Edit</button>
-                <button class="delete-btn" @click="removeTutor(tutor.id)">Delete</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>FullName</th>
+            <th>Email</th>
+            <th>UserName</th>
+            <th>Department</th>
+            <th>ExperienceYears</th>
+            <th>Rating</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="tutor in tutors" :key="tutor.id">
+            <td>{{ tutor.user.fullName }}</td>
+            <td>{{ tutor.user.email }}</td>
+            <td>{{ tutor.user.userName }}</td>
+            <td>{{ tutor.department }}</td>
+            <td>{{ tutor.experienceYears }}</td>
+            <td>{{ tutor.rating }}</td>
+            <td>
+              <button class="edit-btn" @click="editTutor(tutor)">Edit</button>
+              <button class="delete-btn" @click="removeTutor(tutor.id)">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </div>
+  </adminLayout>
 </template>
 
 <style scoped>
 @import '../assets/tableStyles.css';
 
-/* Layout */
-.layout-container {
-  display: flex;
-  height: 100vh;
-}
 
-.main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Background màu xanh lá nhạt */
 .tutor-theme {
-
-  background-color: #dfffdc;
-
-  padding: 1rem;
+  background-color: #e3f2fd;
+  padding: 1.5rem;
   border-radius: 8px;
+  box-sizing: border-box;
+  padding-bottom: 10px;
+  overflow-x: auto;
 }
 
-/* Table & Form - Màu chữ đậm hơn */
-.data-table th, .data-table td, label, h2 {
-  color: #006400;
+.data-table th {
+  background-color: #bbdefb; 
+  color: #0d47a1;
+  text-align: center;
+  padding: 10px;
   font-weight: bold;
 }
-
-/* Button Group */
-.btn-group {
-  margin-bottom: 1rem;
+.data-table td {
+  padding: 10px;
+  border-bottom: 1px solid #e0e0e0;
+  text-align: center;
 }
 
-.btn-group .btn {
-  margin-right: 0.5rem;
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 4px;
-  text-decoration: none;
-  font-weight: bold;
-}
 
-/* Button của trang hiện tại đậm hơn */
-.btn-group .active {
-  background-color: #28a745;
-  color: white;
-}
-
-/* Các button khác nhạt hơn */
-.btn-group .inactive {
-  background-color: #b5e7a0;
-  color: #006400;
-}
 
 /* Action Buttons */
 .edit-btn {
   background: #ffc107;
   color: black;
+  padding: 6px 10px;
+  margin-right: 4px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .delete-btn {
   background: #dc3545;
   color: white;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 button:hover {
-  opacity: 0.8;
+  opacity: 0.85;
 }
-
 </style>

@@ -2,7 +2,7 @@ import axios from "axios";
 import jwtDecode from 'jwt-decode';
 
 // ✅ Đặt lại API_URL gốc để tránh lỗi
-const BASE_API_URL = "https://localhost:7050/api";
+const BASE_API_URL = "https://projectcomp1640-asfhatcmhzf6hghg.eastasia-01.azurewebsites.net/api";
 
 export default {
   login(credentials) {

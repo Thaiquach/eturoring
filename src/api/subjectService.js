@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 
-const BASE_URL = 'https://localhost:7050/api/Subjects';
+const BASE_URL = 'https://projectcomp1640-asfhatcmhzf6hghg.eastasia-01.azurewebsites.net/api/Subjects';
 const getAuthHeaders = () => {
   const token = localStorage.getItem('token');
   return {
@@ -13,16 +13,16 @@ const getAuthHeaders = () => {
 ``
 export default {
   createSubject(payload) {
-    return axios.post(`https://localhost:7050/api/Subjects/create-subject`, payload, getAuthHeaders());
+    return axios.post(`https://projectcomp1640-asfhatcmhzf6hghg.eastasia-01.azurewebsites.net/api/Subjects/create-subject`, payload, getAuthHeaders());
   },
-  getSubjects() { return axios.get(`https://localhost:7050/api/Subjects/get-all-subjects`, getAuthHeaders()) },
+  getSubjects() { return axios.get(`https://projectcomp1640-asfhatcmhzf6hghg.eastasia-01.azurewebsites.net/api/Subjects/get-all-subjects`, getAuthHeaders()) },
 
   updateSubject(id, subject) {
-    return axios.put(`https://localhost:7050/api/Subjects/${id}`, subject, getAuthHeaders())
+    return axios.put(`https://projectcomp1640-asfhatcmhzf6hghg.eastasia-01.azurewebsites.net/api/Subjects/${id}`, subject, getAuthHeaders())
   },
   
   deleteSubject(id) {
-    return axios.delete(`https://localhost:7050/api/Subjects/delete-subject/${id}`,getAuthHeaders())
+    return axios.delete(`https://projectcomp1640-asfhatcmhzf6hghg.eastasia-01.azurewebsites.net/api/Subjects/delete-subject/${id}`,getAuthHeaders())
 
   }
 };
