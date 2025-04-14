@@ -2,6 +2,14 @@
   <component :is="layoutComponent">
     <div :class="['container', role === 'Admin' ? 'admin-tone' : '']">
       <h2 class="page-title">📚 News</h2>
+      <!-- 🔍 Search Blog -->
+      <div class="search-section">
+        <input v-model="searchKeyword" type="text" placeholder="🔍 Search blog by title..." class="search-input"
+          @keyup.enter="handleSearch" />
+        <button class="search-btn" @click="handleSearch">Searching</button>
+        <button class="reset-btn" @click="resetSearch">Reload</button>
+      </div>
+
 
       <!-- Fixed icon cho New Blog -->
       <div v-if="role !== 'Admin'" class="new-blog-icon" @click="toggleCreateForm">
@@ -13,7 +21,7 @@
       <div v-if="role !== 'Admin' && showCreateForm" class="create-blog-overlay">
         <!-- Nền mờ -->
         <div class="overlay-bg" @click="toggleCreateForm"></div>
-        
+
         <!-- Form chính: hiển thị gần top, màu tím đậm -->
         <div class="create-blog-form">
           <h3 class="form-title">📝 What do you think?</h3>
@@ -30,21 +38,25 @@
           <!-- Header: Tác giả và Thời gian -->
           <div class="blog-header">
             <div class="blog-meta">
-              ✍️ <span class="author">{{ blog.user }}</span> | 🕒 <span class="time">{{ formatDate(blog.createdAt) }}</span>
+              ✍️ <span class="author">{{ blog.user }}</span> | 🕒 <span class="time">{{ formatDate(blog.createdAt)
+              }}</span>
             </div>
             <div class="blog-actions" v-if="canEdit(blog) || canDelete(blog)">
-              <button v-if="canEdit(blog)" @click="editBlog(blog)" class="action-btn edit-btn" title="Sửa blog">✏️</button>
-              <button v-if="canDelete(blog)" @click="deleteBlog(blog.id)" class="action-btn delete-btn" title="Xóa blog">🗑️</button>
+              <button v-if="canEdit(blog)" @click="editBlog(blog)" class="action-btn edit-btn"
+                title="Sửa blog">✏️</button>
+              <button v-if="canDelete(blog)" @click="deleteBlog(blog.id)" class="action-btn delete-btn"
+                title="Xóa blog">🗑️</button>
             </div>
           </div>
 
           <!-- Nội dung Blog -->
           <h3 class="blog-title">{{ blog.title }}</h3>
           <p class="blog-content">{{ blog.content }}</p>
-          
+
           <!-- File đính kèm -->
           <div v-if="blog.url" class="blog-file">
-            <img v-if="!blog.url.toLowerCase().endsWith('.pdf')" :src="getFullUrl(blog.url)" alt="Blog Image" class="blog-image" />
+            <img v-if="!blog.url.toLowerCase().endsWith('.pdf')" :src="getFullUrl(blog.url)" alt="Blog Image"
+              class="blog-image" />
             <a v-else :href="getFullUrl(blog.url)" target="_blank" class="file-link">📄 Xem file PDF</a>
           </div>
 
@@ -56,7 +68,7 @@
             <button @click="updateBlogPost" class="btn btn-primary">Update</button>
             <button @click="cancelEdit" class="btn btn-secondary">Cancel</button>
           </div>
-          
+
           <!-- Comments component -->
           <Comments :blogId="blog.id" :isAdmin="role === 'Admin'" />
         </div>
@@ -83,6 +95,8 @@ export default {
   data() {
     return {
       blogs: [],
+      allBlogs: [], // ← NEW: lưu bản gốc để reset tìm kiếm
+      searchKeyword: '', 
       newBlog: {
         title: '',
         content: '',
@@ -92,7 +106,7 @@ export default {
       role: '',
       layoutComponent: userLayout,
       username: '',
-      backendBaseUrl: 'https://projectcomp1640-asfhatcmhzf6hghg.eastasia-01.azurewebsites.net',
+      backendBaseUrl: 'https://localhost:7050',
       showCreateForm: false  // Biến dùng để toggle hiển thị form tạo blog
     };
   },
@@ -100,37 +114,57 @@ export default {
     async fetchBlogs() {
       try {
         const res = await blogService.getAllBlogs();
+        const sorted = res.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         // Sắp xếp blog theo thời gian tạo giảm dần (mới nhất lên đầu)
         this.blogs = res.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        this.allBlogs = [...sorted];
       } catch (error) {
         console.error(error);
       }
     },
+
+    handleSearch() {
+      const keyword = this.searchKeyword.toLowerCase().trim();
+      if (!keyword) {
+        alert("Vui lòng nhập từ khóa tìm kiếm tiêu đề.");
+        return;
+      }
+
+      this.blogs = this.allBlogs.filter(blog =>
+        blog.title.toLowerCase().includes(keyword)
+      );
+    },
+
+    resetSearch() {
+      this.searchKeyword = '';
+      this.blogs = [...this.allBlogs];
+    },
+
     getTokenInfo() {
       const token = localStorage.getItem('token');
       if (token) {
         const decoded = jwtDecode(token);
         this.role = decoded.role;
-        this.username = decoded.username || decoded.given_name; 
+        this.username = decoded.username || decoded.given_name;
       }
     },
     handleFileChange(event) {
       const file = event.target.files[0];
       if (file && !this.isValidFileFormat(file)) {
         alert('Only images and PDF files are allowed.');
-        event.target.value = ''; 
+        event.target.value = '';
       } else {
         this.newBlog.file = file;
       }
     },
     handleEditFileChange(event) {
       const file = event.target.files[0];
-        if (file && !this.isValidFileFormat(file)) {
-          alert('Only images  and PDF files are allowed.');
-          event.target.value = ''; 
-        } else {
-          this.editingBlog.file = file;
-        }
+      if (file && !this.isValidFileFormat(file)) {
+        alert('Only images  and PDF files are allowed.');
+        event.target.value = '';
+      } else {
+        this.editingBlog.file = file;
+      }
     },
     isValidFileFormat(file) {
       const allowedFormats = ['image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'application/pdf'];
@@ -238,7 +272,7 @@ export default {
   top: 70px;
   right: 10px;
   background-color: #fff;
-  padding: 10px 15px;  
+  padding: 10px 15px;
   border-radius: 30px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
   cursor: pointer;
@@ -282,6 +316,7 @@ export default {
   width: 90%;
   margin: 0 20px;
 }
+
 .form-title {
   font-size: 1.25rem;
   font-weight: 600;
@@ -300,6 +335,7 @@ export default {
   font-size: 14px;
   background-color: #f3e5f5;
 }
+
 .input-file {
   margin-bottom: 10px;
 }
@@ -312,10 +348,12 @@ export default {
   cursor: pointer;
   border: none;
 }
+
 .btn-primary {
   background-color: #ce93d8;
   color: white;
 }
+
 .btn-secondary {
   background-color: #f8bbd0;
   color: white;
@@ -338,6 +376,7 @@ export default {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s, box-shadow 0.2s;
 }
+
 .blog-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
@@ -350,11 +389,14 @@ export default {
   align-items: center;
   margin-bottom: 10px;
 }
+
 .blog-meta {
   font-size: 0.875rem;
   color: #6a1b9a;
 }
-.author, .time {
+
+.author,
+.time {
   font-weight: 500;
 }
 
@@ -363,15 +405,18 @@ export default {
   display: flex;
   gap: 10px;
 }
+
 .action-btn {
   background: none;
   border: none;
   cursor: pointer;
   font-size: 1.25rem;
 }
+
 .edit-btn {
   color: #1976d2;
 }
+
 .delete-btn {
   color: #d32f2f;
 }
@@ -383,6 +428,7 @@ export default {
   color: #4a148c;
   margin-bottom: 10px;
 }
+
 .blog-content {
   color: #424242;
   white-space: pre-line;
@@ -393,11 +439,13 @@ export default {
 .blog-file {
   margin-bottom: 10px;
 }
+
 .blog-image {
   max-width: 100%;
   border-radius: 8px;
   border: 1px solid #ce93d8;
 }
+
 .file-link {
   color: #6a1b9a;
   text-decoration: underline;
@@ -413,18 +461,21 @@ export default {
 /* Responsive */
 @media (max-width: 768px) {
   .new-blog-icon {
-    top: 40px; 
+    top: 40px;
     right: 10px;
     font-size: 0.9rem;
   }
+
   .create-blog-form {
     max-width: 90%;
     padding: 15px;
   }
+
   .form-title {
     font-size: 1rem;
   }
 }
+
 /*Changing tone for admin */
 
 .admin-tone {
@@ -481,13 +532,16 @@ export default {
   background-color: #e3f2fd;
   border-color: #90caf9;
 }
+
 .admin-tone .comment-item {
   background-color: #ffffff;
   border-color: #bbdefb;
 }
+
 .admin-tone .comment-meta {
   color: #1976d2;
 }
+
 .admin-tone .btn-update,
 .admin-tone .add-comment button {
   background-color: #1976d2;
@@ -500,15 +554,55 @@ export default {
 
 @media (max-width: 480px) {
   .new-blog-icon {
-    top: 20px; 
+    top: 20px;
     right: 10px;
     font-size: 0.85rem;
   }
+
   .create-blog-form {
     padding: 10px;
   }
+
   .form-title {
     font-size: 0.95rem;
   }
 }
+.search-section {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+  justify-content: center;
+}
+
+.search-input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ce93d8;
+  border-radius: 6px;
+  font-size: 14px;
+  min-width: 200px;
+}
+
+.search-btn,
+.reset-btn {
+  padding: 8px 14px;
+  background-color: #ce93d8;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.reset-btn {
+  background-color: #9e9e9e;
+}
+
+.search-btn:hover {
+  background-color: #ba68c8;
+}
+
+.reset-btn:hover {
+  background-color: #757575;
+}
+
 </style>

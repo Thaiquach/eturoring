@@ -1,6 +1,6 @@
 
 import axios from "axios";
-const BASE_URL = "https://projectcomp1640-asfhatcmhzf6hghg.eastasia-01.azurewebsites.net/api/profile";
+const BASE_URL = "https://localhost:7050/api/profile";
 
 export async function getStudentProfile(studentId, token) {
   try {

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_API_URL = "https://projectcomp1640-asfhatcmhzf6hghg.eastasia-01.azurewebsites.net/api";
+const BASE_API_URL = "https://localhost:7050/api";
 const getToken = () => localStorage.getItem("token");
 
 export const getNotifications = async () => {

@@ -12,7 +12,7 @@ const getAuthHeaders = () => {
 
 const getAllComments = async () => {
     try {
-      const response = await axios.get('https://projectcomp1640-asfhatcmhzf6hghg.eastasia-01.azurewebsites.net/api/comment', getAuthHeaders());
+      const response = await axios.get('https://localhost:7050/api/comment', getAuthHeaders());
       return response.data;
     } catch (error) {
       console.error('Error fetching comments:', error);
@@ -22,7 +22,7 @@ const getAllComments = async () => {
 
 const createComment = async (comment) => {
     try {
-      const response = await axios.post('https://projectcomp1640-asfhatcmhzf6hghg.eastasia-01.azurewebsites.net/api/comment', comment, getAuthHeaders());
+      const response = await axios.post('https://localhost:7050/api/comment', comment, getAuthHeaders());
       return response.data;
     } catch (error) {
       console.error('Error creating comment:', error);
@@ -32,7 +32,7 @@ const createComment = async (comment) => {
 
 const updateComment = async (id, comment) => {
     try {
-      const response = await axios.put(`https://projectcomp1640-asfhatcmhzf6hghg.eastasia-01.azurewebsites.net/api/comment/${id}`, comment, getAuthHeaders());
+      const response = await axios.put(`https://localhost:7050/api/comment/${id}`, comment, getAuthHeaders());
       return response.data;
     } catch (error) {
       console.error('Error updating comment:', error);
@@ -42,7 +42,7 @@ const updateComment = async (id, comment) => {
 
 const deleteComment = async (id) => {
     try {
-      await axios.delete(`https://projectcomp1640-asfhatcmhzf6hghg.eastasia-01.azurewebsites.net/api/comment/${id}`, getAuthHeaders());
+      await axios.delete(`https://localhost:7050/api/comment/${id}`, getAuthHeaders());
       return true;
     } catch (error) {
       console.error('Error deleting comment:', error);
@@ -52,7 +52,7 @@ const deleteComment = async (id) => {
 
 const getCommentById = async (id) => {
     try {
-      const response = await axios.get(`https://projectcomp1640-asfhatcmhzf6hghg.eastasia-01.azurewebsites.net/api/comment/${id}`,getAuthHeaders());
+      const response = await axios.get(`https://localhost:7050/api/comment/${id}`,getAuthHeaders());
       return response.data;
     } catch (error) {
       console.error('Error fetching comment details:', error);
@@ -62,7 +62,7 @@ const getCommentById = async (id) => {
 
 const getCommentByBlogId = async (blogId) => {
     try {
-      const response = await axios.get(`https://projectcomp1640-asfhatcmhzf6hghg.eastasia-01.azurewebsites.net/api/comment/blog/${blogId}`,getAuthHeaders());
+      const response = await axios.get(`https://localhost:7050/api/comment/blog/${blogId}`,getAuthHeaders());
       return response.data;
     } catch (error) {
       console.error('Error ', error);

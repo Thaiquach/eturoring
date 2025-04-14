@@ -1,126 +1,135 @@
 <template>
   <adminLayout>
     <div class="home-class">
-    <h2>New Class</h2>
-    <form @submit.prevent="handleCreateOrUpdateClass">
-      <!-- Thông tin lớp học -->
-      <div>
-        <label>Class Name:</label>
-        <input v-model="classForm.className" type="text" required />
-      </div>
-      <div>
-        <label>Add Tutor:</label>
-        <multiselect v-model="selectedTutor" :options="tutors" :multiple="false" label="fullName" track-by="id"
-          placeholder="Add Tutor"></multiselect>
-      </div>
-      <div>
-        <label>Add Subject:</label>
-        <multiselect v-model="selectedSubject" :options="subjects" :multiple="false" label="subjectName" track-by="id"
-          placeholder="Add Subject"></multiselect>
-      </div>
-      <div>
-        <label>Total Slot:</label>
-        <input v-model.number="classForm.totalSlot" type="number" required />
-      </div>
-      <div>
-        <label>Start Date:</label>
-        <input v-model="classForm.startDate" type="date" required />
-      </div>
-      <div>
-        <label>End Date:</label>
-        <input v-model="classForm.endDate" type="date" required />
-      </div>
-      <div>
-        <label>Description:</label>
-        <textarea v-model="classForm.description"></textarea>
-      </div>
+      <h2>New Class</h2>
+      <form @submit.prevent="handleCreateOrUpdateClass">
+        <!-- Thông tin lớp học -->
+        <div>
+          <label>Class Name:</label>
+          <input v-model="classForm.className" type="text" required />
+        </div>
+        <div>
+          <label>Add Tutor:</label>
+          <multiselect v-model="selectedTutor" :options="tutors" :multiple="false" label="fullName" track-by="id"
+            placeholder="Add Tutor"></multiselect>
+        </div>
+        <div>
+          <label>Add Subject:</label>
+          <multiselect v-model="selectedSubject" :options="subjects" :multiple="false" label="subjectName" track-by="id"
+            placeholder="Add Subject"></multiselect>
+        </div>
+        <div>
+          <label>Total Slot:</label>
+          <input v-model.number="classForm.totalSlot" type="number" required />
+        </div>
+        <div>
+          <label>Start Date:</label>
+          <input v-model="classForm.startDate" type="date" required />
+        </div>
+        <div>
+          <label>End Date:</label>
+          <input v-model="classForm.endDate" type="date" required />
+        </div>
+        <div>
+          <label>Description:</label>
+          <textarea v-model="classForm.description"></textarea>
+        </div>
 
-      <!-- Chọn nhiều học sinh từ danh sách load về -->
-      <div>
-        <label>Add multiple students:</label>
-        <multiselect v-model="selectedStudents" :options="students" :multiple="true" label="fullName" track-by="id"
-          placeholder="Select student">
-          <!-- Hiển thị studentCode + fullName trong dropdown -->
-          <template #option="{ option }">
-            <div>
-              <strong>{{ option.user.fullName }}</strong> -
-              <small>{{ option.studentCode }}</small>
-            </div>
-          </template>
+        <!-- Chọn nhiều học sinh từ danh sách load về -->
+        <div>
+          <label>Add multiple students:</label>
+          <multiselect v-model="selectedStudents" :options="students" :multiple="true" label="fullName" track-by="id"
+            placeholder="Select student">
+            <!-- Hiển thị studentCode + fullName trong dropdown -->
+            <template #option="{ option }">
+              <div>
+                <strong>{{ option.user.fullName }}</strong> -
+                <small>{{ option.studentCode }}</small>
+              </div>
+            </template>
 
-          <!-- Hiển thị khi đã chọn student -->
-          <template #tag="{ option, remove }">
-            <div class="multiselect__tag">
-              {{ option.user.fullName }} ({{ option.studentCode }})
-              <span @click.prevent="remove(option)">❌</span>
-            </div>
-          </template>
+            <!-- Hiển thị khi đã chọn student -->
+            <template #tag="{ option, remove }">
+              <div class="multiselect__tag">
+                {{ option.user.fullName }} ({{ option.studentCode }})
+                <span @click.prevent="remove(option)">❌</span>
+              </div>
+            </template>
 
-          <!-- Khi chỉ chọn 1 item -->
-          <template #singleLabel="{ option }">
-            <div>
-              {{ option.user.fullName }} ({{ option.studentCode }})
-            </div>
-          </template>
-        </multiselect>
-      </div>
+            <!-- Khi chỉ chọn 1 item -->
+            <template #singleLabel="{ option }">
+              <div>
+                {{ option.user.fullName }} ({{ option.studentCode }})
+              </div>
+            </template>
+          </multiselect>
+        </div>
 
-      <button type="submit" class="btn-save">
-        {{ isEditMode ? "💾 Update" : "➕ Add New" }}
-      </button>
-    </form>
-  </div>
-  <div class="class-list">
-    <h3>📚 LIST CLASS</h3>
-    <table class="class-table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>ID</th> <!-- Thêm cột ID -->
-          <th>Class Name</th>
-          <th>Tutor</th>
-          <th>Subject</th>
-          <th>Slot</th>
-          <th>Start Date</th>
-          <th>End Date</th>
-          <th>Description</th>
-          <th>Students</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Vòng lặp để hiển thị danh sách lớp học -->
-        <tr v-for="(classItem, index) in classes" :key="index">
-          <td>{{ index + 1 }}</td>
-          <td>{{ classItem.id || 'N/A' }}</td> <!-- Hiển thị ID -->
-          <td>{{ classItem.className || 'Has no class name' }}</td>
-          <td>{{ classItem.tutorName || 'Has no tutor' }}</td>
-          <td>{{ classItem.subjectName || 'Has no subject' }}</td>
-          <td>{{ classItem.totalSlot || 0 }}</td>
-          <!-- Hiển thị startDate và endDate từ backend -->
-          <td>{{ formatDate(classItem.startDate) }}</td>
-          <td>{{ formatDate(classItem.endDate) }}</td>
-          <td>{{ classItem.description || 'No description' }}</td>
-          <td>
-            <ul v-if="classItem.studentNames && classItem.studentNames.length > 0">
-              <li v-for="(student, idx) in classItem.studentNames" :key="idx">
-                {{ student }}
-              </li>
-            </ul>
-            <span v-else>Empty student</span>
-          </td>
-          <!-- ✅ Nút hành động để chỉnh sửa/xóa -->
-          <td>
-            <button @click="editClass(classItem)" class="btn-edit">✏️ Update</button>
-            <button @click="deleteClass(classItem.id)" class="btn-delete">🗑️ Delete</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+        <button type="submit" class="btn-save">
+          {{ isEditMode ? "💾 Update" : "➕ Add New" }}
+        </button>
+      </form>
+    </div>
+
+    <!-- 🔍 Thanh tìm kiếm lớp học -->
+    <div class="search-section">
+      <input v-model="searchKeyword" type="text" placeholder="🔍 Search class by name..." class="search-input"
+        @keyup.enter="handleSearch" />
+      <button @click="handleSearch" class="search-btn">Tìm kiếm</button>
+      <button @click="resetSearch" class="reset-btn">Tải lại</button>
+    </div>
+
+    <div class="class-list">
+      <h3>📚 LIST CLASS</h3>
+      <table class="class-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>ID</th> <!-- Thêm cột ID -->
+            <th>Class Name</th>
+            <th>Tutor</th>
+            <th>Subject</th>
+            <th>Slot</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Description</th>
+            <th>Students</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Vòng lặp để hiển thị danh sách lớp học -->
+          <tr v-for="(classItem, index) in classes" :key="index">
+            <td>{{ index + 1 }}</td>
+            <td>{{ classItem.id || 'N/A' }}</td> <!-- Hiển thị ID -->
+            <td>{{ classItem.className || 'Has no class name' }}</td>
+            <td>{{ classItem.tutorName || 'Has no tutor' }}</td>
+            <td>{{ classItem.subjectName || 'Has no subject' }}</td>
+            <td>{{ classItem.totalSlot || 0 }}</td>
+            <!-- Hiển thị startDate và endDate từ backend -->
+            <td>{{ formatDate(classItem.startDate) }}</td>
+            <td>{{ formatDate(classItem.endDate) }}</td>
+            <td>{{ classItem.description || 'No description' }}</td>
+            <td>
+              <ul v-if="classItem.studentNames && classItem.studentNames.length > 0">
+                <li v-for="(student, idx) in classItem.studentNames" :key="idx">
+                  {{ student }}
+                </li>
+              </ul>
+              <span v-else>Empty student</span>
+            </td>
+            <!-- ✅ Nút hành động để chỉnh sửa/xóa -->
+            <td>
+              <button @click="editClass(classItem)" class="btn-edit">✏️ Update</button>
+              <button @click="deleteClass(classItem.id)" class="btn-delete">🗑️ Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
   </adminLayout>
-  
+
 </template>
 
 <script setup>
@@ -128,7 +137,6 @@ import { ref, onMounted } from 'vue';
 import Multiselect from 'vue-multiselect';
 import 'vue-multiselect/dist/vue-multiselect.css';
 import adminLayout from '../components/adminLayout.vue';
-
 import classService from '../api/classService';
 
 const isEditMode = ref(false);
@@ -140,6 +148,7 @@ const classes = ref([]);
 const selectedTutor = ref(null);
 const selectedSubject = ref(null);
 const selectedStudents = ref([]);
+const searchKeyword = ref("");
 
 
 const classForm = ref({
@@ -156,6 +165,29 @@ onMounted(() => {
   loadSubjects();
   loadClasses();
 });
+// 🔍 Tìm kiếm lớp học theo tên
+async function handleSearch() {
+  if (!searchKeyword.value.trim()) {
+    alert("Vui lòng nhập từ khóa tìm kiếm!");
+    return;
+  }
+  try {
+    const all = await classService.getAllClasses();
+    classes.value = all.data.filter(cls =>
+      cls.className.toLowerCase().includes(searchKeyword.value.toLowerCase())
+    );
+    console.log("🔍 Kết quả tìm kiếm:", classes.value);
+  } catch (err) {
+    console.error("❌ Lỗi khi tìm kiếm:", err);
+    alert("Không thể tìm kiếm lớp học.");
+  }
+}
+
+// 🔁 Reset tìm kiếm
+async function resetSearch() {
+  searchKeyword.value = "";
+  await loadClasses();
+}
 
 async function loadStudents() {
   try {
@@ -332,7 +364,7 @@ function resetForm() {
   text-align: center;
 }
 
-form > div {
+form>div {
   margin-bottom: 10px;
   display: flex;
   flex-direction: column;
@@ -463,6 +495,45 @@ li {
 
 .btn-delete:hover {
   background-color: #d32f2f;
+}
+.search-section {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+  justify-content: center;
+  align-items: center;
+}
+
+.search-input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #90caf9;
+  border-radius: 6px;
+  font-size: 14px;
+  min-width: 200px;
+}
+
+.search-btn,
+.reset-btn {
+  padding: 10px 16px;
+  font-size: 14px;
+  background-color: #0288d1;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.reset-btn {
+  background-color: #757575;
+}
+
+.search-btn:hover {
+  background-color: #0277bd;
+}
+.reset-btn:hover {
+  background-color: #616161;
 }
 
 </style>
