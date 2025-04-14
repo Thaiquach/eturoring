@@ -77,7 +77,7 @@ const submitForm = async () => {
 </script>
 
 <template>
-  <form @submit.prevent="submitForm" class="form-container student-theme">
+  <form @submit="submitForm" class="form-container student-theme">
     <h3>{{ id ? 'Edit Student' : 'Add Student' }}</h3>
 
     <!-- Full Name -->
@@ -137,40 +137,15 @@ const submitForm = async () => {
 
 <style scoped>
 .form-container {
-  width: 280px;
-  padding: 16px;
-  background: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
-  text-align: center;
-  transition: transform 0.2s ease-in-out;
-}
-
-.form-container:hover {
-  transform: translateY(-5px);
-}
-
-.input-group {
-  position: relative;
-  margin-bottom: 12px;
-}
-
-.input-group input {
   width: 100%;
-  padding: 8px;
-  border: none;
-  border-bottom: 2px solid #007bff;
-  font-size: 14px;
-  outline: none;
-  background: transparent;
-  transition: border-bottom 0.3s ease;
+  max-width: 600px;
+  margin: 40px auto;         
+  padding: 24px 20px;       
+  background: #e3f2fd;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.input-group input:focus {
-  border-bottom: 2px solid #0056b3;
-}
-
-/* Custom styling cho dropdown */
 .input-group {
   display: flex;
   align-items: center;
@@ -178,11 +153,27 @@ const submitForm = async () => {
 }
 
 .input-label {
-  flex: 0 0 80px; /* Chiều rộng cố định cho label */
-  color: #007bff; /* Màu xanh blue */
+  flex: 0 0 100px;
+  color: #1976d2;
   font-weight: bold;
   text-align: left;
-  margin-right: 8px;
+  margin-right: 10px;
+  font-size: 14px;
+}
+
+.input-group input {
+  flex: 1;
+  padding: 6px 10px;
+  font-size: 14px;
+  border: 1px solid #90caf9;
+  border-radius: 4px;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.input-group input:focus {
+  border-color: #1976d2;
 }
 
 .select-group {
@@ -192,37 +183,37 @@ const submitForm = async () => {
 
 .select-group select {
   width: 100%;
-  padding: 8px;
-  border: none;
-  border-bottom: 2px solid #007bff;
+  padding: 6px 10px;
   font-size: 14px;
-  outline: none;
-  background: transparent;
-  transition: border-bottom 0.3s ease;
-  -webkit-appearance: none;
-  -moz-appearance: none;
+  border: 1px solid #90caf9;
+  border-radius: 4px;
+  background: #fff;
   appearance: none;
+  outline: none;
+  transition: border-color 0.3s ease;
 }
 
 .select-group select:focus {
-  border-bottom: 2px solid #0056b3;
+  border-color: #1976d2;
 }
 
 .select-group .custom-arrow {
   position: absolute;
-  right: 8px;
+  right: 10px;
   top: 50%;
   transform: translateY(-50%);
+  font-size: 12px;
+  color: #1976d2;
   pointer-events: none;
-  font-size: 14px;
-  color: #007bff;
 }
+
 button {
+  margin-top: 10px;
   width: 100%;
-  padding: 8px;
+  padding: 10px;
   font-size: 14px;
   font-weight: bold;
-  background: #007bff;
+  background-color: #2196f3;
   color: white;
   border: none;
   border-radius: 6px;
@@ -231,11 +222,10 @@ button {
 }
 
 button:hover {
-  background: #0056b3;
+  background-color: #1976d2;
 }
 
-/* Blue Theme Border */
 .student-theme {
-  border-left: 5px solid #007bff;
+  border-left: 5px solid #2196f3;
 }
 </style>

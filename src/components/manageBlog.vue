@@ -1,6 +1,6 @@
 <template>
-  <userLayout>
-    <div class="container">
+  <component :is="layoutComponent">
+    <div :class="['container', role === 'Admin' ? 'admin-tone' : '']">
       <h2 class="page-title">📚 News</h2>
 
       <!-- Fixed icon cho New Blog -->
@@ -58,11 +58,11 @@
           </div>
           
           <!-- Comments component -->
-          <Comments :blogId="blog.id" />
+          <Comments :blogId="blog.id" :isAdmin="role === 'Admin'" />
         </div>
       </div>
     </div>
-  </userLayout>
+  </component>
 </template>
 
 
@@ -70,6 +70,7 @@
 
 import blogService from '../api/blogService';
 import userLayout from './userLayout.vue';
+import adminLayout from './adminLayout.vue';
 import jwtDecode from 'jwt-decode';
 import manageComment from './manageComment.vue';
 
@@ -89,6 +90,7 @@ export default {
       },
       editingBlog: null,
       role: '',
+      layoutComponent: userLayout,
       username: '',
       backendBaseUrl: 'https://localhost:7050',
       showCreateForm: false  // Biến dùng để toggle hiển thị form tạo blog
@@ -113,12 +115,32 @@ export default {
       }
     },
     handleFileChange(event) {
-      this.newBlog.file = event.target.files[0];
+      const file = event.target.files[0];
+      if (file && !this.isValidFileFormat(file)) {
+        alert('Only images and PDF files are allowed.');
+        event.target.value = ''; 
+      } else {
+        this.newBlog.file = file;
+      }
     },
     handleEditFileChange(event) {
-      this.editingBlog.file = event.target.files[0];
+      const file = event.target.files[0];
+        if (file && !this.isValidFileFormat(file)) {
+          alert('Only images  and PDF files are allowed.');
+          event.target.value = ''; 
+        } else {
+          this.editingBlog.file = file;
+        }
+    },
+    isValidFileFormat(file) {
+      const allowedFormats = ['image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'application/pdf'];
+      return allowedFormats.includes(file.type);
     },
     async createNewBlog() {
+      if (!this.newBlog.title || !this.newBlog.content) {
+        alert('Title and Content fields cannot be empty.');
+        return;
+      }
       const formData = new FormData();
       formData.append('Title', this.newBlog.title);
       formData.append('Content', this.newBlog.content);
@@ -187,6 +209,9 @@ export default {
   mounted() {
     this.getTokenInfo();
     this.fetchBlogs();
+    if (this.role === 'Admin') {
+      this.layoutComponent = adminLayout;
+    }
   }
 };
 </script>
@@ -307,7 +332,7 @@ export default {
 /* Blog Card - tone chủ đạo hồng tím */
 .blog-card {
   background-color: #f3e5f5;
-  border: 1px solid #ce93d8;
+  border: 4px solid #ce93d8;
   border-radius: 10px;
   padding: 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
@@ -400,6 +425,78 @@ export default {
     font-size: 1rem;
   }
 }
+/*Changing tone for admin */
+
+.admin-tone {
+  background-color: #e3f2fd;
+}
+
+.admin-tone .page-title {
+  color: #1976d2;
+}
+
+.admin-tone .new-blog-icon {
+  color: #1565c0;
+  background-color: #ffffff;
+  border: 1px solid #bbdefb;
+}
+
+.admin-tone .create-blog-form {
+  background-color: #e1f5fe;
+  border: 1px solid #90caf9;
+}
+
+.admin-tone .form-title {
+  color: #0d47a1;
+}
+
+.admin-tone .input {
+  background-color: #e3f2fd;
+  border: 1px solid #90caf9;
+}
+
+.admin-tone .btn-primary {
+  background-color: #1976d2;
+}
+
+.admin-tone .blog-card {
+  background-color: #e3f2fd;
+  border-color: #90caf9;
+}
+
+.admin-tone .blog-title {
+  color: #0d47a1;
+}
+
+.admin-tone .edit-btn {
+  color: #1565c0;
+}
+
+.admin-tone .file-link {
+  color: #0d47a1;
+}
+
+/* Comment tone */
+.admin-tone .comments-section {
+  background-color: #e3f2fd;
+  border-color: #90caf9;
+}
+.admin-tone .comment-item {
+  background-color: #ffffff;
+  border-color: #bbdefb;
+}
+.admin-tone .comment-meta {
+  color: #1976d2;
+}
+.admin-tone .btn-update,
+.admin-tone .add-comment button {
+  background-color: #1976d2;
+}
+
+
+
+/*Changing tone for admin */
+
 
 @media (max-width: 480px) {
   .new-blog-icon {

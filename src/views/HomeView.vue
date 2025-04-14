@@ -1,8 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import TopBar from '../components/TopBar.vue'
-import SideBar from '../components/SideBar.vue'
 import dashboardService from '../api/dashboardService';
+import adminLayout from '../components/adminLayout.vue';
 import { Bar } from 'vue-chartjs';
 import {
   Chart as ChartJS,
@@ -40,9 +39,9 @@ const chartData = computed(() => {
     labels: dashboard.value.monthlyStudentStats.map(m => m.label),
     datasets: [
       {
-        label: 'Số học sinh/đăng ký',
+        label: 'Number of students/enrollment',
         data: dashboard.value.monthlyStudentStats.map(m => m.value),
-        backgroundColor: '#4caf50'
+        backgroundColor: '#7fb3e6'
       }
     ]
   };
@@ -56,56 +55,38 @@ const chartOptions = {
     },
     title: {
       display: true,
-      text: 'Thống kê học sinh theo tháng'
+      text: 'Student statistics by month'
     }
   }
 };
 </script>
 
 <template>
-  <div class="layout-container">
-    <!-- Sidebar Component -->
-    <SideBar />
-    <div class="main">
-      <TopBar />
-      <div class="content">
-        <!-- Nhóm button dưới dạng link chuyển trang -->
-        <div class="btn-group">
-          <router-link class="btn" to="/manageStudent">Student</router-link>
-          <router-link class="btn" to="/manageTutor">Tutor</router-link>
-          <router-link class="btn" to="/homeclassroom">Class Room</router-link>
-          <router-link class="btn" to="/manageblog">Blog</router-link>
-          <router-link class="btn" to="/homeclass"> Class</router-link>
-          <router-link class="btn" to="/homeSubject">Subject</router-link>
-          <router-link class="btn" to="/homeschedule">Schedules</router-link>
-          <router-link class="btn" to="/dashboard">Dashboard</router-link>
-        </div>
+  <adminLayout>
+    <div class="dashboard">
+      <h2>📊 Dashboard</h2>
+
+      <!-- Thống kê nhanh -->
+      <div class="stats">
+        <div class="stat-box">👨‍🎓 Student: {{ dashboard.totalStudents }}</div>
+        <div class="stat-box">👩‍🏫 Tutor: {{ dashboard.totalTutors }}</div>
+        <div class="stat-box">🏫 Class: {{ dashboard.totalClasses }}</div>
+        <div class="stat-box">📅 Today: {{ dashboard.lessonsToday }}</div>
       </div>
 
-      <div class="dashboard">
-      <h2>📊 Dashboard Thống kê</h2>
-  
-      <!-- Thông kê nhanh -->
-      <div class="stats">
-        <div class="stat-box">👨‍🎓 Học sinh: {{ dashboard.totalStudents }}</div>
-        <div class="stat-box">👩‍🏫 Gia sư: {{ dashboard.totalTutors }}</div>
-        <div class="stat-box">🏫 Lớp học: {{ dashboard.totalClasses }}</div>
-        <div class="stat-box">📅 Hôm nay: {{ dashboard.lessonsToday }}</div>
-      </div>
-  
-      <!-- Biểu đồ học sinh theo tháng -->
+      <!-- Biểu đồ -->
       <div class="chart-container">
         <Bar :data="chartData" :options="chartOptions" />
       </div>
-  
-      <!-- Top tutor -->
-      <h3>🏆 Top Gia sư</h3>
+
+      <!-- Top Tutor -->
+      <h3>🏆 Top Tutor</h3>
       <table>
         <thead>
           <tr>
-            <th>👤 Họ tên</th>
-            <th>📘 Số lớp</th>
-            <th>⭐ Đánh giá</th>
+            <th>👤 Fullname</th>
+            <th>📘 Number of class</th>
+            <th>⭐ Rate</th>
           </tr>
         </thead>
         <tbody>
@@ -117,17 +98,15 @@ const chartOptions = {
         </tbody>
       </table>
     </div>
-
-
-    </div>
-  </div>
+  </adminLayout>
 </template>
+
 
 <style scoped>
 .layout-container {
   display: flex;
+  flex-direction: row;
   height: 100vh;
-  font-family: sans-serif;
   overflow: hidden;
 }
 
@@ -136,22 +115,66 @@ const chartOptions = {
   display: flex;
   flex-direction: column;
   height: 100vh;
-}
-
-.top-bar-fixed {
-  position: fixed;
-  top: 0;
-  left: 250px; /* chiều rộng sidebar nếu có */
-  right: 0;
-  z-index: 999;
+  overflow: hidden;
 }
 
 .content {
   flex: 1;
   padding: 1rem;
-  margin-top: 60px; /* đảm bảo không bị che bởi TopBar */
+  margin-top: 60px;
+  overflow-y: auto;
+  overflow-x: auto;
 }
 
+/* Phần dashboard */
+.dashboard {
+  flex: 1;
+  padding: 20px;
+  overflow: auto;
+  min-width: 100%;
+  box-sizing: border-box;
+}
+
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-box {
+  background: #f5f5f5;
+  padding: 1rem;
+  border-radius: 8px;
+  flex: 1 1 200px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.chart-container {
+  max-width: 100%;
+  max-height: 250px; 
+  overflow-x: auto;
+  margin-bottom: 2rem;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+table th,
+table td {
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+table th {
+  background-color: #f0f0f0;
+}
+
+/* Button group responsive */
 .btn-group {
   margin-top: 1rem;
   margin-bottom: 2rem;
@@ -171,49 +194,47 @@ const chartOptions = {
   transition: background 0.2s ease;
 }
 
-
 .btn-group .btn:hover {
   background-color: #0056b3;
 }
 
+/* TopBar xử lý nằm cố định và tránh che nội dung */
+.top-bar-fixed {
+  position: fixed;
+  top: 0;
+  left: 220px;
+  right: 0;
+  z-index: 999;
+  height: 50px;
+}
 
-
-
-
-
-/* Phần dashboard */
-.dashboard {
-    padding: 20px;
+/* Responsive xử lý thu nhỏ màn hình */
+@media (max-width: 768px) {
+  .layout-container {
+    flex-direction: column;
   }
-  .stats {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 2rem;
+
+  .main {
+    margin-left: 0;
   }
+
+  .top-bar-fixed {
+    left: 0;
+  }
+
   .stat-box {
-    background: #f5f5f5;
-    padding: 1rem;
-    border-radius: 8px;
-    flex: 1;
-    text-align: center;
-    font-weight: bold;
+    flex: 1 1 100%;
   }
+
   .chart-container {
-    max-width: 600px;
-    margin-bottom: 2rem;
+    overflow-x: auto;
   }
+
   table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 1rem;
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
   }
-  table th,
-  table td {
-    border: 1px solid #ccc;
-    padding: 0.5rem;
-    text-align: center;
-  }
-  table th {
-    background-color: #f0f0f0;
-  }
+}
+
 </style>

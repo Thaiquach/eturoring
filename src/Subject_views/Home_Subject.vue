@@ -1,53 +1,59 @@
 <template>
-  <div class="create-container">
-    
-    <h2>{{ isEditing ? 'Update Subject' : 'Create New Subject' }}</h2>
-    <form @submit.prevent="handleSubmit">
-      <div class="form-group">
-        <label>Subject Name</label>
-        <input v-model="subjectName" required />
-      </div>
-      <div class="form-group">
-        <label>Information</label>
-        <textarea v-model="information" rows="4"></textarea>
-      </div>
-      <button type="submit">{{ isEditing ? 'Update' : 'Create Subject' }}</button>
-      <button v-if="isEditing" type="button" @click="cancelEdit">Hủy</button>
-      <p v-if="message" class="message">{{ message }}</p>
-    </form>
+  <adminLayout>
+    <div class="subject-container">
+      <h2>{{ isEditing ? '✏️ Update' : '➕ Add New Subject' }}</h2>
 
-    <!-- Danh sách subjects ngay dưới form -->
-    <h3>All Subjects</h3>
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Subject Name</th>
-          <th>Information</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="sub in subjects" :key="sub.id">
-          <td>{{ sub.subjectName }}</td>
-          <td>{{ sub.information }}</td>
-          <td>
-            <button @click="editSubject(sub)">Sửa</button>
-            <button @click="deleteSubject(sub.id)">Xóa</button>
-          </td>
-        </tr>
-        <tr v-if="subjects.length === 0">
-          <td colspan="3" class="no-data">No subjects found</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+      <form @submit.prevent="handleSubmit" class="subject-form">
+        <div class="form-group">
+          <label>Subject</label>
+          <input v-model="subjectName" required />
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea v-model="information" rows="3"></textarea>
+        </div>
+
+        <div class="button-group">
+          <button type="submit" class="btn-primary">
+            {{ isEditing ? '💾 Update' : '➕ Add New' }}
+          </button>
+          <button v-if="isEditing" type="button" @click="cancelEdit" class="btn-cancel">❌ Cancel</button>
+        </div>
+
+        <p v-if="message" class="message">{{ message }}</p>
+      </form>
+
+      <h3>📚 LIST SUBJECT</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Subject</th>
+            <th>Description</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="sub in subjects" :key="sub.id">
+            <td>{{ sub.subjectName }}</td>
+            <td>{{ sub.information }}</td>
+            <td>
+              <button @click="editSubject(sub)" class="btn-edit">✏️ Update</button>
+              <button @click="deleteSubject(sub.id)" class="btn-delete">🗑️ Delete</button>
+            </td>
+          </tr>
+          <tr v-if="subjects.length === 0">
+            <td colspan="3" class="no-data">Empty Subject.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </adminLayout>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import subjectService from '../api/subjectService.js'
-import TopBar from '../components/TopBar.vue'    // ← import TopBar
-import SideBar from '../components/SideBar.vue'
+import adminLayout from '../components/adminLayout.vue'
 
 const subjectName = ref('')
 const information = ref('')
@@ -55,6 +61,8 @@ const message = ref('')
 const subjects = ref([])
 const isEditing = ref(false)
 const editingId = ref(null)
+
+onMounted(loadSubjects)
 
 async function loadSubjects() {
   try {
@@ -69,24 +77,19 @@ async function handleSubmit() {
   message.value = ''
   try {
     if (isEditing.value) {
-      // Update subject
       const { data } = await subjectService.updateSubject(editingId.value, {
         subjectName: subjectName.value,
         information: information.value
       })
-      message.value = data.message
-
-      // Update local list
       const index = subjects.value.findIndex(sub => sub.id === editingId.value)
       if (index !== -1) {
         subjects.value[index].subjectName = subjectName.value
         subjects.value[index].information = information.value
       }
-
+      message.value = data.message
       isEditing.value = false
       editingId.value = null
     } else {
-      // Create subject
       const { data } = await subjectService.createSubject({
         subjectName: subjectName.value,
         information: information.value
@@ -95,7 +98,6 @@ async function handleSubmit() {
       message.value = data.message
     }
 
-    // Reset form
     subjectName.value = ''
     information.value = ''
   } catch (err) {
@@ -103,108 +105,172 @@ async function handleSubmit() {
   }
 }
 
-async function editSubject(subject) {
+function editSubject(subject) {
   isEditing.value = true
   editingId.value = subject.id
   subjectName.value = subject.subjectName
   information.value = subject.information
 }
-onMounted(loadSubjects)
 
 async function deleteSubject(id) {
-  const confirmDelete = confirm('Bạn có chắc muốn xóa subject này?')
-  if (!confirmDelete) return
-
+  if (!confirm('Are you sure to delete?')) return
   try {
     await subjectService.deleteSubject(id)
-    // Xóa khỏi danh sách hiển thị
     subjects.value = subjects.value.filter(sub => sub.id !== id)
-    message.value = 'Subject deleted successfully.'
+    message.value = '✅ Subject deleted.'
   } catch (err) {
-    console.error('Delete failed', err)
-    message.value = err.response?.data?.message || 'Failed to delete subject.'
+    message.value = err.response?.data?.message || 'Delete failed.'
   }
 }
 
-
 function cancelEdit() {
   isEditing.value = false
+  editingId.value = null
   subjectName.value = ''
   information.value = ''
-  editingId.value = null
   message.value = ''
 }
 </script>
 
-
 <style scoped>
-.create-container {
-  max-width: 600px;
-  margin: 2rem auto;
-  padding: 1.5rem;
-  background: #fff;
-  border-radius: 8px;
+.subject-container {
+  max-width: 800px;
+  margin: 40px auto;
+  background: #e3f2fd;
+  padding: 28px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.1);
+  transition: all 0.3s ease;
 }
 
-.form-group {
-  margin-bottom: 1rem;
+.subject-container h2,
+.subject-container h3 {
+  text-align: center;
+  color: #0d47a1;
+  margin-bottom: 24px;
+}
+
+.subject-form .form-group {
+  margin-bottom: 16px;
 }
 
 label {
-  display: block;
-  margin-bottom: .5rem;
   font-weight: 600;
+  color: #1565c0;
+  margin-bottom: 6px;
+  display: block;
 }
 
 input,
 textarea {
   width: 100%;
-  padding: .75rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 10px;
+  border: 1px solid #90caf9;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+  transition: border-color 0.3s ease;
 }
 
-button {
-  margin-top: 1rem;
-  padding: .75rem 1.5rem;
-  background: #28a745;
+input:focus,
+textarea:focus {
+  border-color: #1976d2;
+}
+
+.button-group {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.btn-primary {
+  background-color: #2196f3;
   color: white;
+  padding: 10px 20px;
   border: none;
-  border-radius: 4px;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #1976d2;
+}
+
+.btn-cancel {
+  background-color: #f44336;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
 }
 
 .message {
   margin-top: 1rem;
-  color: #155724;
+  color: #2e7d32;
+  font-weight: bold;
+  text-align: center;
 }
 
 .data-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 2rem;
+  background: white;
+  margin-top: 30px;
+  border: 1px solid #bbdefb;
 }
 
-.data-table th,
+.data-table th {
+  background-color: #bbdefb;
+  color: #0d47a1;
+  text-align: center;
+  padding: 10px;
+  font-weight: bold;
+}
+
 .data-table td {
-  border: 1px solid #ccc;
-  padding: .5rem;
+  padding: 10px;
+  border-bottom: 1px solid #e0e0e0;
+  text-align: center;
+}
+
+.data-table tr:hover {
+  background-color: #e3f2fd;
+  transition: background-color 0.2s ease;
+}
+
+.btn-edit {
+  background: #64b5f6;
+  color: white;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 5px;
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+.btn-delete {
+  background: #ef5350;
+  color: white;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-edit:hover {
+  background-color: #42a5f5;
+}
+
+.btn-delete:hover {
+  background-color: #d32f2f;
 }
 
 .no-data {
   text-align: center;
   font-style: italic;
   color: #777;
-}
-
-button[type="button"] {
-  background: #dc3545;
-  /* đỏ */
-  margin-left: 1rem;
-}
-
-button:nth-child(2) {
-  background: #dc3545; /* đỏ */
-  margin-left: 0.5rem;
 }
 </style>

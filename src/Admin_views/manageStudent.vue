@@ -2,12 +2,11 @@
 import { ref, onMounted } from 'vue';
 import studentService from '../api/studentService';
 import CreateStudentForm from '../components/createStudentForm.vue';
-import SideBar from '../components/SideBar.vue';
-import TopBar from '../components/TopBar.vue';
+import adminLayout from '../components/adminLayout.vue'; // ✅ layout chuẩn admin
+
 const { deleteStudent } = studentService;
 const students = ref([]);
 const editingStudent = ref(null);
-
 
 const loadStudents = async () => {
   try {
@@ -35,70 +34,61 @@ const removeStudent = async (id) => {
 const editStudent = (student) => {
   editingStudent.value = { ...student };
 };
+
 const handleStudentUpdated = (updatedStudent) => {
   const index = students.value.findIndex(s => s.id === updatedStudent.id);
   if (index !== -1) {
-    students.value[index] = updatedStudent; // update
+    students.value[index] = updatedStudent;
   } else {
-    students.value.push(updatedStudent); // add mới
+    students.value.push(updatedStudent);
   }
 };
 </script>
 
 <template>
-  <div class="layout-container">
-    <SideBar />
-    <div class="main">
-      <TopBar />
-      <div class="content student-theme">
-        <div class="btn-group">
-          <router-link class="btn active" to="/manageStudent">Student</router-link>
-          <router-link class="btn inactive" to="/manageTutor">Tutor</router-link>
-        </div>
+  <adminLayout>
+    <div class="student-theme">
+      <CreateStudentForm :editingStudent="editingStudent" @studentUpdated="handleStudentUpdated" />
 
-        <h2>Student Management</h2>
-        <CreateStudentForm :editingStudent="editingStudent" @studentUpdated="handleStudentUpdated" />
-
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>FullName</th>
-              <th>Student Code</th>
-              <th>Email</th>
-              <th>Username</th>
-              <th>course</th>
-              <th>status</th>
-              <th>Action</th>
-            </tr>
-
-          </thead>
-          <tbody>
-            <tr v-for="student in students" :key="student.id">
-              <td>{{ student.user.fullName }}</td>
-              <td>{{ student.studentCode }}</td>
-              <td>{{ student.user.email }}</td>
-              <td>{{ student.user.userName }}</td>          
-              <td>{{ student.course }}</td>
-              <td>{{ student.status }}</td>
-              <td>
-                <button class="edit-btn" @click="editStudent(student)">Edit</button>
-                <button class="delete-btn" @click="removeStudent(student.id)">Delete</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>FullName</th>
+            <th>Student Code</th>
+            <th>Email</th>
+            <th>Username</th>
+            <th>Course</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="student in students" :key="student.id">
+            <td>{{ student.user.fullName }}</td>
+            <td>{{ student.studentCode }}</td>
+            <td>{{ student.user.email }}</td>
+            <td>{{ student.user.userName }}</td>
+            <td>{{ student.course }}</td>
+            <td>{{ student.status }}</td>
+            <td>
+              <button class="edit-btn" @click="editStudent(student)">Edit</button>
+              <button class="delete-btn" @click="removeStudent(student.id)">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </div>
+  </adminLayout>
 </template>
 
 <style scoped>
 @import '../assets/tableStyles.css';
 
-/* Layout */
 .layout-container {
   display: flex;
   height: 100vh;
+  overflow-x: hidden;
+  background-color: #e3f2fd;
 }
 
 .main {
@@ -106,60 +96,59 @@ const handleStudentUpdated = (updatedStudent) => {
   display: flex;
   flex-direction: column;
 }
-/* Background màu xanh nhạt */
-.student-theme {
-  background-color: #dfeeff;
-  padding: 1rem;
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  background-color: #e3f2fd; 
+  padding: 24px;
   border-radius: 8px;
 }
 
-/* Table & Form - Màu chữ đậm hơn */
-.data-table th,
-.data-table td,
-label,
-h2 {
-  color: #004080;
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #e3f2fd;
+  border: 1px solid #bbdefb;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-top: 30px;
+  margin-left: 20px;
+}
+
+.data-table th {
+  background-color: #bbdefb;
+  color: #0d47a1;
+  text-align: center;
+  padding: 10px;
   font-weight: bold;
 }
 
-/* Button Group */
-.btn-group {
-  margin-bottom: 1rem;
+.data-table td {
+  padding: 10px;
+  border-bottom: 1px solid #e0e0e0;
+  text-align: center;
 }
 
-.btn-group .btn {
-  margin-right: 0.5rem;
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 4px;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-/* Button của trang hiện tại đậm hơn */
-.btn-group .active {
-  background-color: #007bff;
-  color: white;
-}
-
-/* Các button khác nhạt hơn */
-.btn-group .inactive {
-  background-color: #b3d9ff;
-  color: #004080;
-}
-
-/* Action Buttons */
 .edit-btn {
-  background: #ffc107;
-  color: black;
+  background: #64b5f6;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 4px;
 }
 
 .delete-btn {
-  background: #dc3545;
+  background: #ef5350;
   color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 button:hover {
-  opacity: 0.8;
+  opacity: 0.85;
 }
 </style>

@@ -18,7 +18,7 @@ export default {
   getSubjects() { return axios.get(`https://localhost:7050/api/Subjects/get-all-subjects`, getAuthHeaders()) },
 
   updateSubject(id, subject) {
-    return axios.put(`https://localhost:7050/api/Subjects/${id}`, subject, getAuthHeaders())
+    return axios.put(`https://localhost:7050/api/Subjects/update-subject/${id}`, subject, getAuthHeaders())
   },
   
   deleteSubject(id) {

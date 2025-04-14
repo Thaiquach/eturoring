@@ -39,7 +39,7 @@ export default {
           label: "Home",
           path: this.role === "student" ? "/homestudent" : "/hometutor"
         },
-        { label: "Schedule", path: "/schedule" },
+        { label: "Schedule", path: "/schedulerforuser" },
         { label: "Chat", path: "/classlist" },
         { label: "Blog", path: "/manageblog" },
         { label: "Profile", path: "/profile" },
