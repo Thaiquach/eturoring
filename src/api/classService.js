@@ -1,7 +1,7 @@
 import axios from 'axios';
 import jwtDecode from "jwt-decode";
 
-const BASE_URL = 'https://localhost:7050/api';
+const BASE_URL = 'https://projectcomp1640-asfhatcmhzf6hghg.eastasia-01.azurewebsites.net/api';
 
 export default {
   // Lấy toàn bộ danh sách student

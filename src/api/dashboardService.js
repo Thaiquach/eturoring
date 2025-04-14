@@ -1,7 +1,7 @@
 // 📁 src/api/dashboardService.js
 import axios from 'axios';
 
-const BASE_URL = 'https://localhost:7050/api';
+const BASE_URL = 'https://projectcomp1640-asfhatcmhzf6hghg.eastasia-01.azurewebsites.net/api';
 const token = () => localStorage.getItem('token');
 
 export default {
