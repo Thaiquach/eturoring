@@ -18,7 +18,9 @@ export default {
   getSubjects() { return axios.get(`https://projectcomp1640-asfhatcmhzf6hghg.eastasia-01.azurewebsites.net/api/Subjects/get-all-subjects`, getAuthHeaders()) },
 
   updateSubject(id, subject) {
-    return axios.put(`https://projectcomp1640-asfhatcmhzf6hghg.eastasia-01.azurewebsites.net/api/Subjects/${id}`, subject, getAuthHeaders())
+
+    return axios.put(`https://projectcomp1640-asfhatcmhzf6hghg.eastasia-01.azurewebsites.net/api/Subjects/update-subject/${id}`, subject, getAuthHeaders())
+
   },
   
   deleteSubject(id) {

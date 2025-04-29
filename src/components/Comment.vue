@@ -10,7 +10,7 @@
         <input
           type="text"
           v-model="newComment"
-          placeholder="Viết bình luận..."
+          placeholder="Enter comment..."
         />
         <button @click="submitComment">Gửi</button>
       </div>

@@ -12,6 +12,9 @@ export default {
     });
   },
 };
+export const getToken = () => {
+  return localStorage.getItem("token");
+};
 
 export const handleLoginSuccess = (data, inputUsername) => {
   const token = data.token;

@@ -1,9 +1,9 @@
 <template>
     <div class="reset-password">
-      <h2>Đổi Mật Khẩu</h2>
+      <h2>Reset Password</h2>
       <form @submit.prevent="submitResetPassword">
         <div class="form-group">
-          <label for="newPassword">Mật khẩu mới</label>
+          <label for="newPassword">New Password</label>
           <input
             v-model="newPassword"
             type="password"
@@ -12,7 +12,7 @@
             placeholder="Nhập mật khẩu mới"
           />
         </div>
-        <button type="submit">Đổi Mật Khẩu</button>
+        <button type="submit">Change Password</button>
         <p v-if="message" class="success">{{ message }}</p>
         <p v-if="error" class="error">{{ error }}</p>
       </form>
@@ -48,11 +48,11 @@
           );
           // ✅ Hiển thị thông báo thành công
           this.message =
-            response.message || "Mật khẩu đã được đổi thành công.";
+            response.message || "Change Password successfully.";
           this.error = "";
         } catch (error) {
           this.error =
-            error?.message || "Có lỗi xảy ra khi đặt lại mật khẩu.";
+            error?.message || "Error.";
           this.message = "";
         }
       },

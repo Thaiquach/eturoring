@@ -44,7 +44,12 @@ export default {
 
   // Lấy danh sách subject
   getAllSubjects() {
-    return axios.get(`${BASE_URL}/Subjects/get-all-subjects`);
+    const token = localStorage.getItem('token');
+    return axios.get(`${BASE_URL}/Subjects/get-all-subjects`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
   },
 
   getAllClasses() {

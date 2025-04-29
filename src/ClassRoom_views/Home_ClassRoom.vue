@@ -42,10 +42,10 @@
       const response = await classroomService.createClassroom(payload);
       newClassroomName.value = '';
       await loadClassrooms();
-      alert("✅ Tạo phòng học thành công!");
+      alert("✅ Created classroom successfully!");
     } catch (err) {
       console.error("❌ Lỗi tạo Classroom:", err);
-      alert("❌ Không thể tạo phòng học. Kiểm tra lại!");
+      alert("❌ Can't create classroom. Check again!");
     }
   };
   
@@ -54,10 +54,10 @@
     try {
       await classroomService.deleteClassroomById(roomId);
       await loadClassrooms();
-      alert("🗑 Đã xoá phòng học!");
+      alert("🗑 Deleted classroom!");
     } catch (err) {
       console.error("❌ Lỗi xoá phòng học:", err);
-      alert("❌ Không thể xoá phòng học. Kiểm tra lại!");
+      alert("❌ Can't delete classroom. Check again!");
     }
   };
   

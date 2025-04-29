@@ -3,6 +3,13 @@
     <template #default>
       <div class="main-content">
         <h3>📘 My Classes (Tutor)</h3>
+        <div class="search-section">
+          <input v-model="searchKeyword" type="text" placeholder="🔍 Search by class name..." class="search-input"
+            @keyup.enter="handleSearch" />
+          <button class="search-btn" @click="handleSearch">Searching</button>
+          <button class="reset-btn" @click="resetSearch">Reload</button>
+        </div>
+
         <table class="class-table">
           <thead>
             <tr>
@@ -51,6 +58,24 @@ import classService from '../api/classService';
 import UserLayout from '../components/userLayout.vue';
 
 const myTutorClasses = ref([]);
+const allTutorClasses = ref([]); // chứa tất cả lớp của tutor để tìm kiếm
+const searchKeyword = ref("");
+
+const handleSearch = () => {
+  if (!searchKeyword.value.trim()) {
+    alert("Vui lòng nhập tên lớp để tìm!");
+    return;
+  }
+
+  myTutorClasses.value = allTutorClasses.value.filter(cls =>
+    cls.className.toLowerCase().includes(searchKeyword.value.toLowerCase())
+  );
+};
+
+const resetSearch = () => {
+  searchKeyword.value = "";
+  myTutorClasses.value = [...allTutorClasses.value];
+};
 
 const formatDate = (date) => {
   const d = new Date(date);
@@ -78,6 +103,7 @@ const loadTutorClasses = async () => {
       (cls) => cls.tutorId === Number(tutorId)
 
     );
+    allTutorClasses.value = [...myTutorClasses.value]; // lưu bản đầy đủ
     console.log("✅ Các lớp của tutor:", myTutorClasses.value);
   } catch (error) {
     console.error('❌ Lỗi khi tải lớp học (Tutor):', error);
@@ -108,7 +134,8 @@ onMounted(loadTutorClasses);
 }
 
 .class-table thead th {
-  background-color: #D8B2D1; /* tím lavender */
+  background-color: #D8B2D1;
+  /* tím lavender */
   color: #4b3d73;
   padding: 14px;
   font-weight: 600;
@@ -137,4 +164,42 @@ onMounted(loadTutorClasses);
   padding: 0;
   margin: 0;
 }
+.search-section {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  margin-bottom: 24px;
+  justify-content: center;
+}
+
+.search-input {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  min-width: 200px;
+}
+
+.search-btn,
+.reset-btn {
+  padding: 8px 14px;
+  background-color: #7e57c2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.reset-btn {
+  background-color: #9e9e9e;
+}
+
+.search-btn:hover {
+  background-color: #673ab7;
+}
+
+.reset-btn:hover {
+  background-color: #757575;
+}
+
 </style>

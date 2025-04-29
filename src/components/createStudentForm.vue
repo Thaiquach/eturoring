@@ -14,49 +14,61 @@ const password = ref('');
 const course = ref('');
 const status = ref('');
 
-
-
 watch(() => props.editingStudent, (newVal) => {
   if (newVal) {
-    console.log("Editing student with id:", newVal.id);
     id.value = newVal.id;
     fullName.value = newVal.user?.fullName || '';
     email.value = newVal.user?.email || '';
     userName.value = newVal.user?.userName || '';
-    password.value = newVal.password || '';
+    password.value = '';
     studentCode.value = newVal.studentCode || '';
     course.value = newVal.course || '';
     status.value = newVal.status || '';
-    
-  
   }
 }, { deep: true });
 
 const submitForm = async () => {
   let updatedStudent = null;
 
-  
   const studentPayload = {
     FullName: fullName.value,
     StudentCode: studentCode.value,
     Email: email.value,
     UserName: userName.value,
     Password: password.value,
-    
     Course: course.value,
     Status: status.value
   };
 
   if (id.value) {
-    console.log("Submit form update student, id:", id.value);
     const success = await studentService.updateStudent(id.value, studentPayload);
     if (success) {
-      updatedStudent = { id: id.value, ...studentPayload };
+      updatedStudent = {
+        id: id.value,
+        studentCode: studentPayload.StudentCode,
+        course: studentPayload.Course,
+        status: studentPayload.Status,
+        user: {
+          fullName: studentPayload.FullName,
+          email: studentPayload.Email,
+          userName: studentPayload.UserName
+        }
+      };
     }
   } else {
     const success = await studentService.createStudent(studentPayload);
     if (success) {
-      updatedStudent = { id: Date.now(), ...studentPayload };
+      updatedStudent = {
+        id: Date.now(), // hoặc ID trả về từ server nếu có
+        studentCode: studentPayload.StudentCode,
+        course: studentPayload.Course,
+        status: studentPayload.Status,
+        user: {
+          fullName: studentPayload.FullName,
+          email: studentPayload.Email,
+          userName: studentPayload.UserName
+        }
+      };
     }
   }
 
@@ -64,6 +76,7 @@ const submitForm = async () => {
     emit('studentUpdated', updatedStudent);
   }
 
+  // Reset form
   id.value = null;
   fullName.value = '';
   studentCode.value = '';
@@ -73,49 +86,41 @@ const submitForm = async () => {
   course.value = '';
   status.value = '';
 };
-
 </script>
 
 <template>
   <form @submit.prevent="submitForm" class="form-container student-theme">
     <h3>{{ id ? 'Edit Student' : 'Add Student' }}</h3>
 
-    <!-- Full Name -->
     <div class="input-group">
       <label for="fullName" class="input-label">Full Name</label>
       <input id="fullName" v-model="fullName" required placeholder="Full Name" :disabled="id" />
     </div>
 
-    <!-- Student ID -->
     <div class="input-group">
       <label for="studentCode" class="input-label">Student ID</label>
       <input id="studentCode" v-model="studentCode" required placeholder="Student ID" />
     </div>
 
-    <!-- Email -->
     <div class="input-group">
       <label for="email" class="input-label">Email</label>
       <input id="email" v-model="email" type="email" required placeholder="Email" :disabled="id" />
     </div>
 
-    <!-- Username -->
     <div class="input-group">
       <label for="userName" class="input-label">Username</label>
       <input id="userName" v-model="userName" required placeholder="Username" :disabled="id" />
     </div>
 
-    <!-- Password -->
     <div class="input-group">
       <label for="password" class="input-label">Password</label>
-
       <input id="password" v-model="password" type="password" required placeholder="******" :disabled="id" />
     </div>
 
-    <!-- Course Dropdown -->
     <div class="input-group">
       <label for="course" class="input-label">Course</label>
       <div class="select-group">
-        <select id="course" v-model="course" @change="handleCourseChange" required>
+        <select id="course" v-model="course" required>
           <option disabled value="">Select Course</option>
           <option value="IT">IT</option>
           <option value="Business">Business</option>
@@ -125,7 +130,6 @@ const submitForm = async () => {
       </div>
     </div>
 
-    <!-- Status -->
     <div class="input-group">
       <label for="status" class="input-label">Status</label>
       <input id="status" v-model="status" required placeholder="Status" />
@@ -139,19 +143,17 @@ const submitForm = async () => {
 .form-container {
   width: 100%;
   max-width: 600px;
-  margin: 40px auto;         
-  padding: 24px 20px;       
+  margin: 40px auto;
+  padding: 24px 20px;
   background: #e3f2fd;
   border-radius: 10px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
-
 .input-group {
   display: flex;
   align-items: center;
   margin-bottom: 12px;
 }
-
 .input-label {
   flex: 0 0 100px;
   color: #1976d2;
@@ -160,7 +162,6 @@ const submitForm = async () => {
   margin-right: 10px;
   font-size: 14px;
 }
-
 .input-group input {
   flex: 1;
   padding: 6px 10px;
@@ -171,16 +172,13 @@ const submitForm = async () => {
   outline: none;
   transition: border-color 0.3s ease;
 }
-
 .input-group input:focus {
   border-color: #1976d2;
 }
-
 .select-group {
   position: relative;
   flex: 1;
 }
-
 .select-group select {
   width: 100%;
   padding: 6px 10px;
@@ -192,11 +190,9 @@ const submitForm = async () => {
   outline: none;
   transition: border-color 0.3s ease;
 }
-
 .select-group select:focus {
   border-color: #1976d2;
 }
-
 .select-group .custom-arrow {
   position: absolute;
   right: 10px;
@@ -206,7 +202,6 @@ const submitForm = async () => {
   color: #1976d2;
   pointer-events: none;
 }
-
 button {
   margin-top: 10px;
   width: 100%;
@@ -220,11 +215,9 @@ button {
   cursor: pointer;
   transition: background 0.3s ease;
 }
-
 button:hover {
   background-color: #1976d2;
 }
-
 .student-theme {
   border-left: 5px solid #2196f3;
 }
