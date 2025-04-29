@@ -106,7 +106,7 @@ export default {
       role: '',
       layoutComponent: userLayout,
       username: '',
-      backendBaseUrl: 'https://localhost:7050',
+      backendBaseUrl: 'https://projectcomp1640-asfhatcmhzf6hghg.eastasia-01.azurewebsites.net',
       showCreateForm: false  // Biến dùng để toggle hiển thị form tạo blog
     };
   },

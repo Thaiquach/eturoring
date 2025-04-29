@@ -56,7 +56,7 @@ const searchKeyword = ref("");
 
 const handleSearch = () => {
   if (!searchKeyword.value.trim()) {
-    alert("Vui lòng nhập tên lớp để tìm kiếm!");
+    alert("Enter class name, please!");
     return;
   }
 
@@ -86,7 +86,7 @@ const loadStudentClasses = async () => {
     const studentId = decoded?.StudentId;
 
     if (!studentId) {
-      alert("Không tìm thấy StudentId trong token!");
+      alert("Not found StudentId in token!");
       return;
     }
 
@@ -99,7 +99,7 @@ const loadStudentClasses = async () => {
 
 
   } catch (error) {
-    console.error('❌ Lỗi khi tải lớp học:', error);
+    console.error('❌ Error load class:', error);
   }
 };
 

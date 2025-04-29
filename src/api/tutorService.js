@@ -11,7 +11,7 @@ const getAuthHeaders = () => {
 };
 
 const getAll = async () => {
-  const tutorData = await axios.get('https://localhost:7050/api/profile/tutors', getAuthHeaders());
+  const tutorData = await axios.get('https://projectcomp1640-asfhatcmhzf6hghg.eastasia-01.azurewebsites.net/api/profile/tutors', getAuthHeaders());
   console.log(tutorData
   );
   return tutorData;
@@ -20,7 +20,7 @@ const getAll = async () => {
 
 const createTutor = async (tutor) => {
   try {
-    const response = await axios.post('https://localhost:7050/api/account/register-tutor', tutor, getAuthHeaders());
+    const response = await axios.post('https://projectcomp1640-asfhatcmhzf6hghg.eastasia-01.azurewebsites.net/api/account/register-tutor', tutor, getAuthHeaders());
     return response.data;
   } catch (error) {
     console.error('Error creating tutor:', error);
@@ -33,7 +33,7 @@ const createTutor = async (tutor) => {
 
 const updateTutor = async (id, tutor) => {
   try {
-    const response = await axios.put(`https://localhost:7050/api/profile/update-tutor/${id}`, tutor, getAuthHeaders());
+    const response = await axios.put(`https://projectcomp1640-asfhatcmhzf6hghg.eastasia-01.azurewebsites.net/api/profile/update-tutor/${id}`, tutor, getAuthHeaders());
     console.log("Response:", response, "ID:", id); 
     return response.data;
   } catch (error) {
@@ -47,7 +47,7 @@ const updateTutor = async (id, tutor) => {
 
 const deleteTutor = async (id) => {
   try {
-    await axios.delete(`https://localhost:7050/api/profile/delete-tutor/${id}`, getAuthHeaders());
+    await axios.delete(`https://projectcomp1640-asfhatcmhzf6hghg.eastasia-01.azurewebsites.net/api/profile/delete-tutor/${id}`, getAuthHeaders());
     return true;
   } catch (error) {
     console.error('Error deleting tutor:', error);

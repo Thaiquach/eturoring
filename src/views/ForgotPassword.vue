@@ -1,6 +1,6 @@
 <template>
   <div class="forgot-password">
-    <h2>Quên Mật Khẩu</h2>
+    <h2>Forgot Password</h2>
     <form @submit.prevent="submitForgotPassword">
       <div class="form-group">
         <label for="email">Email</label>
@@ -9,10 +9,10 @@
           type="email"
           id="email"
           required
-          placeholder="Nhập email"
+          placeholder="Enter email"
         />
       </div>
-      <button type="submit">Gửi Link Đổi Mật Khẩu</button>
+      <button type="submit">Send Link Reset Password</button>
       <p v-if="message" class="success">{{ message }}</p>
       <p v-if="error" class="error">{{ error }}</p>
     </form>
@@ -34,11 +34,11 @@ export default {
     async submitForgotPassword() {
       try {
         const response = await sendForgotPasswordEmail(this.email);
-        this.message = "Link đổi mật khẩu đã được gửi tới email của bạn.";
+        this.message = "Link Reset Password sended to your email.";
         this.error = "";
       } catch (error) {
         this.error =
-          error?.message || "Có lỗi xảy ra khi gửi link đổi mật khẩu.";
+          error?.message || "Error.";
         this.message = "";
       }
     },

@@ -11,7 +11,7 @@ const getAuthHeaders = () => {
 };
 
 const getAll = async () => {
-  const studentData = await axios.get('https://localhost:7050/api/profile/students', getAuthHeaders());
+  const studentData = await axios.get('https://projectcomp1640-asfhatcmhzf6hghg.eastasia-01.azurewebsites.net/api/profile/students', getAuthHeaders());
   console.log(studentData);
   return studentData;
 };
@@ -19,7 +19,7 @@ const getAll = async () => {
 
 const createStudent = async (student) => {
   try {
-    const response = await axios.post('https://localhost:7050/api/account/register-student', student, getAuthHeaders());
+    const response = await axios.post('https://projectcomp1640-asfhatcmhzf6hghg.eastasia-01.azurewebsites.net/api/account/register-student', student, getAuthHeaders());
     return response.data;
   } catch (error) {
     console.error('Error creating student:', error);
@@ -32,7 +32,7 @@ const createStudent = async (student) => {
 
 const updateStudent = async (id, student) => {
   try {
-    const response = await axios.put(`https://localhost:7050/api/profile/update-student/${id}`, student, getAuthHeaders());
+    const response = await axios.put(`https://projectcomp1640-asfhatcmhzf6hghg.eastasia-01.azurewebsites.net/api/profile/update-student/${id}`, student, getAuthHeaders());
     console.log("Response:", response, "ID:", id); 
     return response.data;
   } catch (error) {
@@ -45,7 +45,7 @@ const updateStudent = async (id, student) => {
 };
 const deleteStudent = async (id) => {
   try {
-    await axios.delete(`https://localhost:7050/api/profile/delete-student/${id}`, getAuthHeaders());
+    await axios.delete(`https://projectcomp1640-asfhatcmhzf6hghg.eastasia-01.azurewebsites.net/api/profile/delete-student/${id}`, getAuthHeaders());
     return true;
   } catch (error) {
     console.error('Error deleting student:', error);

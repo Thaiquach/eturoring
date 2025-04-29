@@ -152,24 +152,24 @@ const handleCreate = async () => {
     payload.day = parseInt(form.value.day); // ✨ Fix: DayOfWeek backend
     if (isEditing.value && editingId.value) {
       await scheduleService.updateSchedule(editingId.value, payload);
-      alert('✅ Đã cập nhật lịch học!');
+      alert('✅ Update schedule successfully!');
     } else {
       if (isRecurring.value) {
         payload.scheduleDate = new Date(form.value.scheduleDate).toISOString();
         console.log('📤 Payload lặp:', payload);
         await scheduleService.createRecurringSchedule(payload);
-        alert('✅ Đã tạo lịch lặp lại!');
+        alert('✅ Repeat schedule created!');
       } else {
         payload.scheduleDate = new Date(form.value.scheduleDate).toISOString();
         await scheduleService.createSchedule(payload);
-        alert('✅ Đã tạo lịch học!');
+        alert('✅ Created Schedule!');
       }
     }
     await loadSchedules();
     cancelEdit();
   } catch (err) {
-    console.error('❌ Lỗi:', err);
-    alert('❌ Thao tác thất bại!');
+    console.error('❌ Error:', err);
+    alert('❌ Error!');
   }
 };
 
