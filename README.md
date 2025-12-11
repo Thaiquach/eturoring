@@ -1,9 +1,3 @@
-Dưới đây là một bản `README.md` chi tiết và chuyên nghiệp dành cho dự án Frontend **"Eturoring"** của bạn, dựa trên cấu trúc và mã nguồn đã phân tích.
-
-Bạn có thể tạo một file tên là `README.md` trong thư mục gốc của dự án và dán nội dung này vào.
-
------
-
 # 🎓 Eturoring - Hệ Thống Quản Lý & Tương Tác Đào Trực Tuyến (Frontend)
 
 **Eturoring** là giao diện người dùng (Client-side) cho hệ thống quản lý trung tâm đào tạo/gia sư. Dự án được xây dựng hiện đại với **Vue 3** và **Vite**, cung cấp trải nghiệm mượt mà cho cả Quản trị viên (Admin), Gia sư (Tutor) và Học viên (Student).
